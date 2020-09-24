@@ -2,7 +2,7 @@ const request = require('request');
 const cheerio = require('cheerio');
 const mongoose = require('fs');
 
-const URL = "https://www.usherbrooke.ca/";
+const URL = "https://www.npmjs.com/package/fs";
 var list=[];
 
 request(URL, function (err, res, body) {
@@ -23,7 +23,7 @@ request(URL, function (err, res, body) {
             list.push(link);
         });
         console.log(list.length);
-
+        console.log(list);
     }
 }
 );
