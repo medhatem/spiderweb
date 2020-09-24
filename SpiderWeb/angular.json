@@ -119,6 +119,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "SpiderWeb"
+    }
+  },
+  "defaultProject": "SpiderWeb",
+  "cli": {
+    "analytics": false
+  }
 }
