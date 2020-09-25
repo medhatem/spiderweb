@@ -1,0 +1,25 @@
+a.navbar-brand, a.navbar-brand:hover, a.navbar-brand:active, a.navbar-brand:focus {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
+    color: white;
+    font-weight: bold;
+  }
+  
+  html {
+    font-size: 14px;
+  }
+  @media (min-width: 768px) {
+    html {
+      font-size: 16px;
+    }
+  }
+  
+  .box-shadow {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+  }
+  
+  .navbar {
+    background: linear-gradient(90deg, #005587, 20%, #00225c);
+  }
+  

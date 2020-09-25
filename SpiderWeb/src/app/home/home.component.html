@@ -1,0 +1,23 @@
+<div class="container container-spiderweb">
+    <h5 class="title-spiderweb">Veuillez entrez les URLs initiaux des différents crawlers</h5>
+  
+    <div id="erreur" class="alert alert-danger" style="display:none" role="alert">
+      L'un des URLs des crawlers n'existe pas. Veuillez réessayer
+    </div>
+  
+    <form [formGroup]="postUrl" (ngSubmit)="post(postUrl.value)">
+    <div class="form-group">
+      <label>Crawler 1</label>
+      <input type="text" class="form-control" formControlName="crawler1" placeholder="https://www.usherbrooke.ca" required>
+    </div>
+    <div class="form-group">
+      <label>Crawler 2</label>
+      <input type="text" class="form-control" formControlName="crawler2" placeholder="https://github.com" required>
+    </div>
+    <div class="form-group">
+      <label>Crawler 3</label>
+      <input type="text" class="form-control" formControlName="crawler3" placeholder="https://gitlab.com" required>
+    </div>
+    <button type="submit" class="btn btn-spiderweb">C'est parti !</button>
+  </form>
+  </div>
