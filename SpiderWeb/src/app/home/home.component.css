@@ -36,4 +36,10 @@
   .btn-spiderweb:hover {
     background-color: #00225ce6;
   }
+
+  .alert-danger {
+    text-align: center;
+    border: 1px solid transparent;
+    border-radius: .25rem;
+  }
   

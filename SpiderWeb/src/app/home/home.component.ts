@@ -26,6 +26,10 @@ export class HomeComponent {
 
   post = function (postUrl) {
     console.log(postUrl);
+    document.getElementById("erreurVide").style.display = "none";
+    document.getElementById("erreurUrl1").style.display = "none";
+    document.getElementById("erreurUrl2").style.display = "none";
+    document.getElementById("erreurUrl3").style.display = "none";
 
     let home = {
       'crawler1': '' + postUrl.crawler1 + '',
@@ -36,15 +40,51 @@ export class HomeComponent {
 
     if (postUrl.crawler1 == '' || postUrl.crawler2 == '' || postUrl.crawler3 == '') {
       //Afficher erreur
-      document.getElementById("erreur").style.display = "block";
+      document.getElementById("erreurVide").style.display = "block";
     }
     else {
-      console.log(home);
-      //Requete post http
-      this.apiService.AddUrl(home);
+      function urlExists(url) {
+        return fetch(url, {mode: "no-cors"})
+          .then(res => true)
+          .catch(err => false)
+      }
 
-      //Navigation
-      //this.router.navigate(['/']);
+      let count = 0; 
+      
+      console.log("count0 " + count);
+
+      urlExists(postUrl.crawler1).then(result => {
+        this.resultat1 = result;
+        //console.log(this.resultat1);
+        if (this.resultat1 == false) {
+          //Afficher erreur
+          console.log("ErreurUrl1");
+          document.getElementById("erreurUrl1").style.display = "block";
+        }
+      });
+
+      urlExists(postUrl.crawler2).then(result => {
+        this.resultat2 = result;
+        //console.log(this.resultat1);
+        if (this.resultat2 == false) {
+          //Afficher erreur
+          console.log("ErreurUrl2");
+          document.getElementById("erreurUrl2").style.display = "block";
+        }
+      });
+
+      urlExists(postUrl.crawler3).then(result => {
+        this.resultat3 = result;
+        //console.log(this.resultat1);
+        if (this.resultat3 == false) {
+          //Afficher erreur
+          console.log("ErreurUrl3");
+          document.getElementById("erreurUrl3").style.display = "block";
+        }
+      });
+
+        //Afficher réussite
+        console.log("Tout va bien");
     }
   }
 }
