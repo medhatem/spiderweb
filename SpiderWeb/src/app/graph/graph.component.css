@@ -1,0 +1,29 @@
+.progress-bar {
+    background-color: #005587;
+  }
+
+  .progress {
+    height: 35px;
+  }
+
+  .container-urls {
+    background-color: #f4f4f4;
+    border-radius: .25rem;
+    margin-top: 16px;
+    height: 80%;
+    width: 15%;
+    position: absolute;
+    border: 1px solid #dae0e5;
+;
+  }
+  
+  .title-spiderweb {
+    text-align: center;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .form-control:active, .form-control:focus {
+    border-color: #00225cd4;
+    box-shadow: 0 0 0 0.2rem #00225c8f;
+  }
