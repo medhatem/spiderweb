@@ -1,14 +1,14 @@
 import { Component, OnInit} from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { ApiService } from './api.service';
+import { ApiService } from './../api.service';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.css']
 })
-export class AppComponent {
+export class HomeComponent {
   title = 'SpiderWeb';
   postUrl: FormGroup;
 
