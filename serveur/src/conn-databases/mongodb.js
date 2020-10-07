@@ -12,4 +12,5 @@ const mongodbOpenConnexion = async () => {
 exports.GetUrlsCollection = () => {
   return databases.crawlers.collection("urls");
 };
+
 exports.MongoDbOpenConnexionFct = mongodbOpenConnexion;
