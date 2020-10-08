@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-//const fetchUrls = require("../services/test-fetch-urls").FetchTest;
+const fetchUrlstest = require("../services/test-fetch-urls").FetchTest;
 const { fetchUrls, feast, markConsumed, saveUrls } = require("../services/urls");
 
 /* GET all urls */
@@ -17,9 +17,11 @@ router.get("/", async function (req, res, next) {
 /* POST request for some url to feast */
 router.post("/feast", async function (req, res, next) {
   try {
-    const urls = await feast(req.body.crawlerId, req.body.maxUrlsCount);
+    const urls= await fetchUrlstest();
+    //const urls = await feast(req.body.crawlerId, req.body.maxUrlsCount);
     res.status(200).send(urls);
-    await markConsumed(req.body.crawlerId, urls);
+    //await markConsumed(req.body.crawlerId, urls);
+
   } catch (error) {
     console.error(error);
   }

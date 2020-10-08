@@ -1,6 +1,7 @@
 const request = require('request');
 const cheerio = require('cheerio');
 const url = require('url');
+const axios = require('axios');
 
 class Site {
     constructor(url_princ,enfant, parent) {
@@ -12,27 +13,10 @@ class Site {
 }
 
 class Crawler {
-    constructor(url_princ, li) {
-      this.lien_principal = url_princ;
-      this.list=li;
-    }
-    set lien_principal(url_princ) {
-      this._lien_principal = url_princ;
-    }
-
-    get lien_principal() {
-      return this._lien_principal;
-    }
-    
-    set list(lists) {
-        this._list = lists;
-      }
-  
-    get list() {
-        return this._list;
+    constructor() {
     }
       
-    lancerAnalyse(lien_principal,list){
+    lancerAnalyse(lien_principal){
         let myset= new Set();
         console.log(this.lien_principal);
         request(this.lien_principal, function (err, res, body) {
@@ -81,8 +65,19 @@ class Crawler {
     envoyer_resultat(){
 
     }
-    recevoir(){
-        
+    async recevoir(){
+
+        const list=  await axios.post('127.0.0.1:3000/urls/feast',{
+          crawlerId: 1,
+          maxUrlsCount: 25
+        })
+
+        console.log(list);
+        c.lancerAnalyse(list[0]);
+        // array.forEach(url => {
+          
+        //   c.lancerAnalyse(url);
+        // });
     }
   }
 
@@ -91,7 +86,10 @@ class Crawler {
 //   c = new Crawler("https://www.npmjs.com/", li);
 //   c.lancerAnalyse("https://www.npmjs.com/", li,myset);
 
-  var li1=[];
+
+  c = new Crawler();
+
+  c.recevoir();
   
-  c = new Crawler("http://github.com", li1);
-  c.lancerAnalyse("http://github.com",li1);
+
+
