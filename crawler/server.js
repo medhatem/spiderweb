@@ -18,8 +18,8 @@ class Crawler {
       
     lancerAnalyse(lien_principal){
         let myset= new Set();
-        console.log(this.lien_principal);
-        request(this.lien_principal, function (err, res, body) {
+        console.log(lien_principal);
+        request(lien_principal, function (err, res, body) {
             if(err)
             {
                 console.log(err);
@@ -67,17 +67,21 @@ class Crawler {
     }
     async recevoir(){
 
-        const list=  await axios.post('127.0.0.1:3000/urls/feast',{
+      try {
+        const instance= axios.create({baseURL: 'http://127.0.0.1:3000'})
+        const result=  await instance.post('/urls/feast',{
           crawlerId: 1,
           maxUrlsCount: 25
         })
 
-        console.log(list);
-        c.lancerAnalyse(list[0]);
-        // array.forEach(url => {
-          
-        //   c.lancerAnalyse(url);
-        // });
+        result.data.forEach(couple => {
+          c.lancerAnalyse(couple.url);
+        });
+      } catch (error) {
+        console.error(error);
+      }
+ 
+
     }
   }
 
@@ -89,7 +93,7 @@ class Crawler {
 
   c = new Crawler();
 
-  c.recevoir();
+   c.recevoir().then();
   
 
 
