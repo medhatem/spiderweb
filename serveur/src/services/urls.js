@@ -1,12 +1,15 @@
-const GetUrlsCollection = require("../conn-databases/mongodb").GetUrlsCollection;
+const GetUrlsGraphCollection = require("../conn-databases/mongodb").GetUrlsGraphCollection;
+const GetUrlsFeastCollection = require("../conn-databases/mongodb").GetUrlsFeastCollection;
 
-const fetchUrls = async () => {
-  const getAllDocs = await GetUrlsCollection().find().toArray();
+const distributeUrl = require("./distribute-url");
+
+const fetchUrlsGraph = async () => {
+  const getAllDocs = await GetUrlsGraphCollection().find().toArray();
   return getAllDocs;
 };
 
 const feast = async (crawler_id, max_urls_count) => {
-  const urls_not_consumed = await GetUrlsCollection()
+  const urls_not_consumed = await GetUrlsFeastCollection()
     .find({ consumed: { $eq: false }, crawler_id: { $eq: crawler_id } })
     .limit(max_urls_count)
     .toArray();
@@ -20,16 +23,33 @@ const createAfterFeastUpdateObject = (url) => {
 
 const markConsumed = async (crawler_id, max_urls_count) => {
   urls_update_array = max_urls_count.map(createAfterFeastUpdateObject);
-  const result = await GetUrlsCollection().bulkWrite(urls_update_array);
+  const result = await GetUrlsFeastCollection().bulkWrite(urls_update_array);
   return result;
 };
 
-// const createSaveObjectUrl = () => {};
+const saveUrls = async (urls) => {
+  const url_enfants = Array.from(new Set(urls.url_enfants));
 
-const saveUrls = async (captured) => {
-  /* captured.url_enfants.map((url) => createSaveObjectUrl(url, captured.url_parent, captured.crawler_id));
-  const result = await GetUrlsCollection().bulkWrite();
-  return result; */
+  await GetUrlsGraphCollection().insertOne({
+    url_parent: urls.url_parent,
+    url_enfants: url_enfants,
+    timestamp: new Date(),
+    crawler_id: urls.crawler_id, // Crawler who has found the urls
+    doc_version: 1,
+  });
+
+  /*
+    TODO: Faire la partie qui calcul a qui va l'url ICI 
+   */
+
+  await GetUrlsFeastCollection().insertMany(
+    url_enfants.map((url) => ({
+      url,
+      crawler_id: distributeUrl(url),
+      consumed: false,
+      doc_version: 1,
+    }))
+  );
 };
 
-module.exports = { fetchUrls, feast, markConsumed, saveUrls };
+module.exports = { fetchUrlsGraph, feast, markConsumed, saveUrls };
