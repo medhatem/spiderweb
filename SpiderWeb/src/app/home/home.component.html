@@ -2,30 +2,37 @@
     <h5 class="title-spiderweb">Veuillez entrez les URLs initiaux des différents crawlers</h5>
   
     <div id="erreurVide" class="alert alert-danger" style="display:none" role="alert">
-      L'un des URLs des crawlers est vide. Veuillez tous les compléter
+      L'un des URLs est vide. Veuillez tous les compléter
     </div>
 
     <form [formGroup]="postUrl" (ngSubmit)="post(postUrl.value)">
     <div class="form-group">
       <div id="erreurUrl1" class="alert-danger" style="display:none" role="alert">
-        L'URL du rawler 1 n'existe pas. Veuillez réessayer
+        L'URL 1 n'existe pas. Veuillez réessayer
       </div>
-      <label>Crawler 1</label>
-      <input type="text" class="form-control" formControlName="crawler1" placeholder="https://www.usherbrooke.ca" required>
+      <label>URL 1</label>
+      <input type="text" class="form-control" formControlName="url1" placeholder="https://www.usherbrooke.ca" required>
     </div>
     <div class="form-group">
       <div id="erreurUrl2" class="alert-danger" style="display:none" role="alert">
-        L'URL du crawler 2 n'existe pas. Veuillez réessayer
+        L'URL 2 n'existe pas. Veuillez réessayer
       </div>
-      <label>Crawler 2</label>
-      <input type="text" class="form-control" formControlName="crawler2" placeholder="https://github.com" required>
+      <label>URL 2</label>
+      <input type="text" class="form-control" formControlName="url2" placeholder="https://github.com" required>
     </div>
     <div class="form-group">
       <div id="erreurUrl3" class="alert-danger" style="display:none" role="alert">
-        L'URL du crawler 3 n'existe pas. Veuillez réessayer
+        L'URL 3 n'existe pas. Veuillez réessayer
       </div>
-      <label>Crawler 3</label>
-      <input type="text" class="form-control" formControlName="crawler3" placeholder="https://gitlab.com" required>
+      <label>URL 3</label>
+      <input type="text" class="form-control" formControlName="url3" placeholder="https://gitlab.com" required>
+    </div>
+    <div class="form-group">
+      <div id="erreurUrl4" class="alert-danger" style="display:none" role="alert">
+        L'URL 4 n'existe pas. Veuillez réessayer
+      </div>
+      <label>URL 4</label>
+      <input type="text" class="form-control" formControlName="url4" placeholder="https://facebook.com" required>
     </div>
     <button type="submit" class="btn btn-spiderweb">C'est parti !</button>
   </form>

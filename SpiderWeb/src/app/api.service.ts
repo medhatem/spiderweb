@@ -15,10 +15,10 @@ export class ApiService {
 
   /* Requetes */
   AddUrl(urlData) {
-    console.log("AddUrl(urlData)" + urlData);
-    //this.httpClient.post<any>(this.uri + '/users/add_user', userData).subscribe(res => {
-      //this.response = res;
-    //});
+    console.log(urlData);
+    this.httpClient.post<any>(this.uri + '/add_urls/', urlData).subscribe(res => {
+      this.response = res;
+    });
   }
 
 }
