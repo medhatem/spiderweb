@@ -1,20 +1,10 @@
 const GetUrlsGraphCollection = require("../conn-databases/mongodb").GetUrlsGraphCollection;
 const GetUrlsFeastCollection = require("../conn-databases/mongodb").GetUrlsFeastCollection;
-
-const distributeUrl = require("./distribute-url");
+const allTokensOfActiveCrawlers = require("../services/crawlers-manager").allTokensOfActiveCrawlers;
 
 const fetchUrlsGraph = async () => {
   const getAllDocs = await GetUrlsGraphCollection().find().toArray();
   return getAllDocs;
-};
-
-const feast = async (crawler_token, max_urls_count) => {
-  const urls_not_consumed = await GetUrlsFeastCollection()
-    .findOne({ taken: { $eq: false } })
-    .limit(max_urls_count)
-    .toArray();
-
-  return urls_not_consumed;
 };
 
 const createAfterFeastUpdateObject = (url) => {
@@ -25,6 +15,29 @@ const markTaken = async (max_urls_count) => {
   urls_update_array = max_urls_count.map(createAfterFeastUpdateObject);
   const result = await GetUrlsFeastCollection().bulkWrite(urls_update_array);
   return result;
+};
+
+const feast = async (crawler_session, max_urls_count) => {
+  const all_token = await allTokensOfActiveCrawlers();
+
+  const crawler_current_index = all_token
+    .map((token, index) => ({
+      token,
+      index,
+    }))
+    .filter(({ token }) => token === crawler_session.crawler_token)[0].index;
+
+  const urls_not_consumed = await GetUrlsFeastCollection()
+    .find(
+      { $and: [{ taken: { $eq: false } }, { _id: { $mod: [all_token.length, crawler_current_index] } }] },
+      { projection: { url: 1 } }
+    )
+    .limit(max_urls_count)
+    .toArray();
+
+  await markTaken(urls_not_consumed);
+
+  return urls_not_consumed;
 };
 
 const saveUrls = async (crawler_token, urls) => {

@@ -16,7 +16,7 @@ function timer_ms(min_ms, max_ms) {
 const Create50Timer = async () => {
   await Promise.all(
     Array.from(Array(10000).keys()).map(async (index) => {
-      await timer_ms(500, 1000); // Entre 0.5sec à 10sec
+      await timer_ms(100, 1000); // Entre 0.5sec à 10sec
       CrawlEmitter.emit("catch", `url-${index}`);
     })
   );

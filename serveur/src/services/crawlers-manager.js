@@ -1,11 +1,19 @@
 const crypto = require("crypto");
-const GetCrawlersCollection = require("../conn-databases/mongodb").GetCrawlersCollection;
+const GetCrawlersSessionCollection = require("../conn-databases/mongodb").GetCrawlersCollection;
 
 const hash = crypto.createHash("sha1");
 const secret = process.env.CRAWLER_TOKEN_SECRET;
 
 const authentication = async (authentication_token) => {
-  result = await GetCrawlersCollection().findOne({ crawler_token: { $eq: authentication_token } });
+  result = await GetCrawlersSessionCollection().findOne({ crawler_token: { $eq: authentication_token } });
+  return result;
+};
+
+const deconnection = async (authentication_token) => {
+  result = await GetCrawlersSessionCollection().updateOne(
+    { crawler_token: { $eq: authentication_token } },
+    { $set: { active: false } }
+  );
   return result;
 };
 
@@ -17,7 +25,8 @@ const subscribe = async (crawlers_secret) => {
   const now = new Date();
   hash.update(now.getTime() + secret);
   const crawler_token = hash.digest("base64");
-  await GetCrawlersCollection().insertOne({
+
+  await GetCrawlersSessionCollection().insertOne({
     creation_time: now,
     last_auth: now,
     crawler_token,
@@ -25,5 +34,14 @@ const subscribe = async (crawlers_secret) => {
   });
 };
 
+const allTokensOfActiveCrawlers = async () => {
+  const result = await GetCrawlersSessionCollection()
+    .find({ active: { $eq: true } }, { projection: { crawler_token: 1 } })
+    .toArray();
+  return result;
+};
+
 exports.authentication = authentication;
 exports.subscribe = subscribe;
+exports.deconnection = deconnection;
+exports.allTokensOfActiveCrawlers = allTokensOfActiveCrawlers;
