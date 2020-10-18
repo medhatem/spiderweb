@@ -8,7 +8,7 @@ const UrlsCaptured = [];
 
 // https://riptutorial.com/node-js/example/20131/settimeout-promisified
 function timer_ms(min_ms, max_ms) {
-  return new Promise(function (resolve, s) {
+  return new Promise(function (resolve, reject) {
     setTimeout(resolve, Math.random() * (max_ms - min_ms) + min_ms);
   });
 }
