@@ -20,6 +20,12 @@ router.get("/", function (req, res, next) {
 router.post("/subscribe", async function (req, res, next) {
   try {
     const result = await subscribe(req.body.secret);
+
+    if (!result) {
+      res.status(403);
+      return;
+    }
+
     res.status(200).send(result);
   } catch (error) {
     res.status(404);

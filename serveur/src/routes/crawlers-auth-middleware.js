@@ -11,7 +11,7 @@ const crawlers_auth_middleware = async (req, res, next) => {
     return res.status(403);
   }
 
-  req.session.crawler_id = result._id;
+  req.session.crawler_token = result.crawler_token;
 
   next();
 };
