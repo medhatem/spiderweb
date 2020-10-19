@@ -4,20 +4,23 @@ const url = require('url');
 const axios = require('axios');
 
 class Site {
-    constructor(url_princ,enfant, parent) {
+    constructor(url_princ,enfant) {
       this.lien_principal = url_princ;
       this.titre= null;
-      this.list_parent=parent;
-      this.list_enfant=enfant;
+      this.description= null;
+      this.set_enfant=enfant;
     }
 }
+
+
 
 class Crawler {
     constructor() {
     }
-      
+    // function pour analyser la page d'un lien recu  
     lancerAnalyse(lien_principal){
-        let myset= new Set();
+        let urls_enfants= new Set();
+        const site=new Site();
         console.log(lien_principal);
         request(lien_principal, function (err, res, body) {
             if(err)
@@ -33,7 +36,7 @@ class Crawler {
                     const link = $(this).attr('href');
                     if(link.match("http") == "http"){
                         const link1 = new URL(link);
-                        myset.add(link1.hostname);
+                        urls_enfants.add(link1.hostname);
 
                     }else{
                         const link2 = $(this).text();
@@ -41,7 +44,7 @@ class Crawler {
                         sp.forEach(phrase => {
                             if(phrase.match("http") === "http"){
                                 const link = new URL(phrase);
-                                myset.add(link.hostname);
+                                urls_enfants.add(link.hostname);
 
                             }
                         });
@@ -50,17 +53,24 @@ class Crawler {
                 const principal_url = new URL(lien_principal);
                 console.log("____________________________________________________________________");
                 console.log("____________________________________________________________________");
-                myset.forEach(function(lien) {
+                
+                urls_enfants.forEach(function(lien) {
                     //const current_url = new URL(lien);
+                    
                     if(principal_url.hostname.toString().match(principal_url.hostname.toString()) !=lien.toString() ){
+                        
                         console.log(lien);
                     }
                   })
-
+                  site(lien_principal,urls_enfants);
             }
+            console.log("************************")
+            console.log(site);
         }
         );
+        return site;
     }
+
 
     envoyer_resultat(){
 
@@ -73,10 +83,12 @@ class Crawler {
           crawlerId: 1,
           maxUrlsCount: 25
         })
-
+        const sites=[];
         result.data.forEach(couple => {
-          c.lancerAnalyse(couple.url);
+            sites.push(crawler.lancerAnalyse(couple.url));
         });
+        console.log("*******************************************************");
+        console.log(sites);
       } catch (error) {
         console.error(error);
       }
@@ -91,9 +103,9 @@ class Crawler {
 //   c.lancerAnalyse("https://www.npmjs.com/", li,myset);
 
 
-  c = new Crawler();
+  crawler = new Crawler();
 
-   c.recevoir().then();
+  crawler.recevoir().then();
   
 
 
