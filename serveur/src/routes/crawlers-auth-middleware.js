@@ -1,7 +1,7 @@
 const authentication = require("../services/crawlers-manager").authentication;
 
 const crawlers_auth_middleware = async (req, res, next) => {
-  if (!req.get("authorization")) {
+/*  if (!req.get("authorization")) {
     return res.status(403);
   }
 
@@ -12,7 +12,7 @@ const crawlers_auth_middleware = async (req, res, next) => {
   }
 
   req.session = result;
-
+*/
   next();
 };
 
