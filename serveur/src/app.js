@@ -4,6 +4,7 @@ const logger = require("morgan");
 
 const indexRouter = require("./routes/index");
 const urlsRouter = require("./routes/urls");
+const crawlers_auth_mw = require("./routes/crawlers-auth-middleware");
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use("/", indexRouter);
+app.use(crawlers_auth_mw);
 app.use("/urls", urlsRouter);
 
 module.exports = app;
