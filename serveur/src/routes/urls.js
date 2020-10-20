@@ -25,7 +25,6 @@ router.get("/", async function (req, res, next) {
 router.post("/feast", async function (req, res, next) {
   try {
     const urls = await feast(req.session, req.body.maxUrlsCount);
-    console.log("urls:", urls);
     res.status(200).send(urls);
   } catch (error) {
     res.status(404);

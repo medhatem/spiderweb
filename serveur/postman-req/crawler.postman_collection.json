@@ -1,0 +1,131 @@
+{
+	"info": {
+		"_postman_id": "d5ad1740-a518-4718-aac7-cc68454a1d13",
+		"name": "crawler",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "urls",
+			"item": [
+				{
+					"name": "sites",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "gogj2C399BPf9VTv7QbaL/l8lEQ=",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sites\":[\n        {\n            \"url_parent\": \"github.com\", \n            \"url_enfants\":[\n                \"https://facebook.com\",\n                \"https://usherbrooke.ca\",\n                \"https://en.wikipedia.org\",\n                \"https://docs.mongodb.com\",\n                \"https://expressjs.com\",\n                \"https://www.w3schools.com\",\n                \"https://medium.com\"\n            ]\n        },\n        {\n            \"url_parent\": \"facebook.com\", \n            \"url_enfants\":[\n                \"https://youtube.com\",\n                \"https://developer.mozilla.org\",\n                \"https://stackoverflow.com\",\n                \"https://www.geeksforgeeks.org\",\n                \"https://learning.postman.com\"\n            ]\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/urls/sites",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"urls",
+								"sites"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "feast",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "gogj2C399BPf9VTv7QbaL/l8lEQ=",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"maxUrlsCount\":7\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/urls/feast",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"urls",
+								"feast"
+							]
+						},
+						"description": "crawlers great feast"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "index",
+			"item": [
+				{
+					"name": "auth_normal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "652c8332-e010-43a5-aff5-f701dc348ef9",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"secret\":\"Poptart is not a breakfast\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/subscribe",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"subscribe"
+							]
+						},
+						"description": "Authenticate to the server as a crawler"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

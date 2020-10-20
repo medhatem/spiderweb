@@ -1,22 +1,26 @@
 const GetUrlsGraphCollection = require("../conn-databases/mongodb").GetUrlsGraphCollection;
 const GetUrlsFeastCollection = require("../conn-databases/mongodb").GetUrlsFeastCollection;
 const allTokensOfActiveCrawlers = require("../services/crawlers-manager").allTokensOfActiveCrawlers;
+const Double = require("mongodb").Double;
+const crypto = require("crypto");
 
 const fetchUrlsGraph = async () => {
   const getAllDocs = await GetUrlsGraphCollection().find().toArray();
   return getAllDocs;
 };
 
-const createAfterFeastUpdateObject = (url) => {
-  return { updateOne: { filter: { url }, update: { $set: { taken: true, taken_date: new Date() } } } };
+const createAfterFeastUpdateObject = (crawler_token, url) => {
+  return {
+    updateOne: { filter: { url }, update: { $set: { taken: true, taken_date: new Date(), taken_by: crawler_token } } },
+  };
 };
 
-const markTaken = async (urls) => {
+const markTaken = async (crawler_token, urls) => {
   if (!(urls && urls.length > 0)) {
     return false;
   }
 
-  urls_update_array = urls.map(createAfterFeastUpdateObject);
+  urls_update_array = urls.map((url) => createAfterFeastUpdateObject(crawler_token, url));
   const result = await GetUrlsFeastCollection().bulkWrite(urls_update_array);
   return result;
 };
@@ -31,26 +35,34 @@ const feast = async (crawler_session, max_urls_count) => {
     }))
     .filter(({ crawler_token }) => crawler_token === crawler_session.crawler_token)[0].index;
 
+  const token_count = all_token.length;
+
   const urls_not_consumed = (
     await GetUrlsFeastCollection()
       .find(
         {
-          $expr: {
-            $and: [
-              { $eq: ["$taken", false] },
-              { $eq: [{ $mod: [{ $toDouble: { $toString: "$_id" } }, all_token.length] }, crawler_current_index] },
-            ],
-          },
-        }, // { $and: [{ taken: { $eq: false } }, { _id: { $mod: [all_token.length, crawler_current_index] } }] }
+          $and: [
+            { taken: { $eq: false } },
+            { distribution_number: { $mod: [token_count, crawler_current_index] } }, // distribution_number % token_count === crawler_current_index
+          ],
+        },
         { projection: { url: 1, _id: 0 } }
       )
       .limit(max_urls_count)
       .toArray()
   ).map(({ url }) => url);
 
-  await markTaken(urls_not_consumed);
+  await markTaken(crawler_session.crawler_token, urls_not_consumed);
 
   return urls_not_consumed;
+};
+
+const urlToNumber = (url) => {
+  hash = crypto.createHash("sha1");
+  hash.update(url);
+  const url_hashed = hash.digest("hex");
+  const url_hashed_slice = url_hashed.slice(url_hashed.length - 13);
+  return Number(`0x${url_hashed_slice}`);
 };
 
 const stock = async (crawler_session, sites) => {
@@ -68,8 +80,10 @@ const stock = async (crawler_session, sites) => {
     await GetUrlsFeastCollection().insertMany(
       url_enfants.map((url) => ({
         url,
+        distribution_number: Double(urlToNumber(url)),
         taken: false,
         taken_date: null,
+        taken_by: null,
         creation_time: new Date(),
         doc_version: 1,
       }))

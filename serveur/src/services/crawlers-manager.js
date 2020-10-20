@@ -1,7 +1,6 @@
 const crypto = require("crypto");
 const GetCrawlersSessionCollection = require("../conn-databases/mongodb").GetCrawlersSessionCollection;
 
-const hash = crypto.createHash("sha1");
 const secret = process.env.CRAWLER_TOKEN_SECRET;
 
 const authentication = async (authentication_token) => {
@@ -23,6 +22,7 @@ const subscribe = async (crawlers_secret) => {
   }
 
   const now = new Date();
+  const hash = crypto.createHash("sha1");
   hash.update(now.getTime() + secret);
   const crawler_token = hash.digest("base64");
 
