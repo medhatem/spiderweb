@@ -19,14 +19,14 @@ router.get("/", function (req, res, next) {
  */
 router.post("/subscribe", async function (req, res, next) {
   try {
-    const result = await subscribe(req.body.secret);
+    const crawler_token = await subscribe(req.body.secret);
 
-    if (!result) {
+    if (!crawler_token) {
       res.status(403);
       return;
     }
 
-    res.status(200).send(result);
+    res.status(200).send({ crawler_token });
   } catch (error) {
     res.status(404);
     console.error(error);

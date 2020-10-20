@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 //const fetchUrls = require("../services/test-fetch-urls").FetchTest;
-const { fetchUrlsGraph, feast, saveUrls } = require("../services/urls");
+const { fetchUrlsGraph, feast, stock } = require("../services/urls");
 
 /* GET all urls */
 router.get("/", async function (req, res, next) {
@@ -10,6 +10,7 @@ router.get("/", async function (req, res, next) {
     const urls = await fetchUrlsGraph();
     res.status(200).send(urls);
   } catch (error) {
+    res.status(404);
     console.error(error);
   }
 });
@@ -17,33 +18,39 @@ router.get("/", async function (req, res, next) {
 /*
   req.body.feast
   {
-    crawlerId: Int,
     maxUrlsCount: Int
   }
  */
 /* POST request for some url to feast */
 router.post("/feast", async function (req, res, next) {
   try {
-    const urls = await feast(req.body.crawlerId, req.body.maxUrlsCount);
+    const urls = await feast(req.session, req.body.maxUrlsCount);
+    console.log("urls:", urls);
     res.status(200).send(urls);
   } catch (error) {
+    res.status(404);
     console.error(error);
   }
 });
 
 /*  
-    req.body.urls ==================
-    {
-      url_parent: String,
-      url_enfants: [String, String, ...],
-      crawler_id: Int,
-    }
+    req.body.sites ==================
+    [
+      {
+        url_parent: String,
+        url_enfants: [String, String, ...],
+      },
+      {...},
+      .
+      .
+      .
+    ]
  */
 /* POST one to many urls */
-router.post("/urls", async function (req, res, next) {
+router.post("/sites", async function (req, res, next) {
   try {
-    const result = await saveUrls(req.body.urls);
-    res.status(201).send(result);
+    const result = await stock(req.session, req.body.sites);
+    res.status(201).send({ message: "success" });
   } catch (error) {
     res.status(404);
     console.error(error);

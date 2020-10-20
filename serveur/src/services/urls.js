@@ -11,8 +11,12 @@ const createAfterFeastUpdateObject = (url) => {
   return { updateOne: { filter: { url }, update: { $set: { taken: true, taken_date: new Date() } } } };
 };
 
-const markTaken = async (max_urls_count) => {
-  urls_update_array = max_urls_count.map(createAfterFeastUpdateObject);
+const markTaken = async (urls) => {
+  if (!(urls && urls.length > 0)) {
+    return false;
+  }
+
+  urls_update_array = urls.map(createAfterFeastUpdateObject);
   const result = await GetUrlsFeastCollection().bulkWrite(urls_update_array);
   return result;
 };
@@ -21,45 +25,59 @@ const feast = async (crawler_session, max_urls_count) => {
   const all_token = await allTokensOfActiveCrawlers();
 
   const crawler_current_index = all_token
-    .map((token, index) => ({
-      token,
+    .map(({ crawler_token }, index) => ({
+      crawler_token,
       index,
     }))
-    .filter(({ token }) => token === crawler_session.crawler_token)[0].index;
+    .filter(({ crawler_token }) => crawler_token === crawler_session.crawler_token)[0].index;
 
-  const urls_not_consumed = await GetUrlsFeastCollection()
-    .find(
-      { $and: [{ taken: { $eq: false } }, { _id: { $mod: [all_token.length, crawler_current_index] } }] },
-      { projection: { url: 1 } }
-    )
-    .limit(max_urls_count)
-    .toArray();
+  const urls_not_consumed = (
+    await GetUrlsFeastCollection()
+      .find(
+        {
+          $expr: {
+            $and: [
+              { $eq: ["$taken", false] },
+              { $eq: [{ $mod: [{ $toDouble: { $toString: "$_id" } }, all_token.length] }, crawler_current_index] },
+            ],
+          },
+        }, // { $and: [{ taken: { $eq: false } }, { _id: { $mod: [all_token.length, crawler_current_index] } }] }
+        { projection: { url: 1, _id: 0 } }
+      )
+      .limit(max_urls_count)
+      .toArray()
+  ).map(({ url }) => url);
 
   await markTaken(urls_not_consumed);
 
   return urls_not_consumed;
 };
 
-const saveUrls = async (crawler_token, urls) => {
-  const url_enfants = Array.from(new Set(urls.url_enfants));
+const stock = async (crawler_session, sites) => {
+  const stock_sites = sites.map(async (site) => {
+    const url_enfants = Array.from(new Set(site.url_enfants));
 
-  await GetUrlsGraphCollection().insertOne({
-    url_parent: urls.url_parent,
-    url_enfants: url_enfants,
-    creation_time: new Date(),
-    crawler_token, // Crawler who has found the urls
-    doc_version: 1,
+    await GetUrlsGraphCollection().insertOne({
+      url_parent: site.url_parent,
+      url_enfants: url_enfants,
+      creation_time: new Date(),
+      crawler_token: crawler_session.crawler_token, // Crawler who has found the urls
+      doc_version: 1,
+    });
+
+    await GetUrlsFeastCollection().insertMany(
+      url_enfants.map((url) => ({
+        url,
+        taken: false,
+        taken_date: null,
+        creation_time: new Date(),
+        doc_version: 1,
+      }))
+    );
   });
 
-  await GetUrlsFeastCollection().insertMany(
-    url_enfants.map((url) => ({
-      url,
-      taken: false,
-      taken_date: null,
-      creation_time: new Date(),
-      doc_version: 1,
-    }))
-  );
+  const result = await Promise.all(stock_sites);
+  return result;
 };
 
-module.exports = { fetchUrlsGraph, feast, markTaken, saveUrls };
+module.exports = { fetchUrlsGraph, feast, stock };
