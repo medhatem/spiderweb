@@ -17,6 +17,9 @@ class Crawler {
     constructor() {
         this.instance= axios.create({baseURL: 'http://127.0.0.1:3000'})
     }
+
+
+
     // function pour analyser la page d'un lien recu  
     lancerAnalyse(lien_principal){
         let urls_enfants= new Set();
@@ -106,6 +109,22 @@ class Crawler {
  
 
     }
+
+    async run(){
+        while(true){
+
+            try {
+                await this.recevoir();
+                
+            } catch (error) {
+                console.log("rien a faire")
+                const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
+
+                await sleep(10000); // sleep for 10 seconds
+
+            }
+        } 
+    }
   }
 
 //   var li=[];
@@ -116,7 +135,7 @@ class Crawler {
 
   crawler = new Crawler();
 
-  crawler.recevoir().then();
+  crawler.run();
   
 
 
