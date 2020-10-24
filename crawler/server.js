@@ -127,12 +127,6 @@ class Crawler {
     }
   }
 
-//   var li=[];
-//   let myset= new Set();
-//   c = new Crawler("https://www.npmjs.com/", li);
-//   c.lancerAnalyse("https://www.npmjs.com/", li,myset);
-
-
   crawler = new Crawler();
 
   crawler.run();
