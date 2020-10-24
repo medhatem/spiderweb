@@ -7,7 +7,7 @@ const { fetchUrlsGraph, feast, stock } = require("../services/urls");
 /* GET all urls */
 router.get("/", async function (req, res, next) {
   try {
-    const urls = await fetchUrlsGraph();
+    const urls = await fetchUrlsGraph(req.query.urlparent);
     res.status(200).send(urls);
   } catch (error) {
     res.status(404);

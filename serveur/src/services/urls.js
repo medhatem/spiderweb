@@ -4,10 +4,27 @@ const allTokensOfActiveCrawlers = require("../services/crawlers-manager").allTok
 const Double = require("mongodb").Double;
 const crypto = require("crypto");
 
-const fetchUrlsGraph = async () => {
-  const getAllDocs = await GetUrlsGraphCollection().find().toArray();
-  return getAllDocs;
+const fetchUrlsGraph = async (urlparent) => {
+  //const getAllDocs = await GetUrlsGraphCollection().find().toArray();
+
+  const noeud_edges= await GetUrlsGraphCollection().aggregate( [
+    { "$match": { "url_parent": urlparent  } },
+       {$graphLookup: {
+          from: "urls_graph",
+          startWith: "$url_parent",
+          connectFromField: "url_enfants",
+          connectToField: "url_parent",
+          maxDepth: 3,
+          depthField: "numConnections",
+          as: "edges"
+       }}
+    
+ ] ).toArray();
+ 
+ return noeud_edges[0];
+
 };
+
 
 const createAfterFeastUpdateObject = (crawler_token, url) => {
   return {
@@ -86,7 +103,8 @@ const stock = async (crawler_session, sites) => {
         taken_by: null,
         creation_time: new Date(),
         doc_version: 1,
-      }))
+      }),
+      {ordered: false})
     );
   });
 
