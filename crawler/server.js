@@ -1,6 +1,7 @@
 const request = require('request');
 const cheerio = require('cheerio');
 const url = require('url');
+var validUrl = require('valid-url');
 const axios = require('axios');
 
 class Site {
@@ -15,7 +16,7 @@ class Site {
 
 class Crawler {
     constructor() {
-        this.instance= axios.create({baseURL: 'http://127.0.0.1:3000'})
+        this.instance= axios.create({baseURL: 'http://127.0.0.1:3000',headers:{Authorization: "mSlu20JMWtM/RSrfxWVtvJuRlEg="}})
     }
 
 
@@ -25,61 +26,84 @@ class Crawler {
         let urls_enfants= new Set();
         
         console.log(lien_principal);
-        return new Promise(function (resolve, reject) {
-            request(lien_principal, function (err, res, body) {
-                if(err)
-                {
-                    //console.log(err);
-                    reject(err);
-                    return;
-                }   
-                else
-                {
-            
-                    let $ = cheerio.load(body);  //loading of complete HTML body
+
+        if (validUrl.isUri(lien_principal)){
+            console.log('lien_principal is valid URI');
+
+            return new Promise(function (resolve, reject) {
+                request(lien_principal, function (err, res, body) {
+                    if(err)
+                    {
+                        //console.log(err);
+                        reject(err);
+                        return;
+                    }   
+                    else
+                    {
                 
-                    $('a').each(function(index){
-                        const link = $(this).attr('href');
-                        if(link.match("http") == "http"){
-                            const link1 = new URL(link);
-                            urls_enfants.add(link1.hostname);
-
-                        }else{
-                            const link2 = $(this).text();
-                            var sp=link2.split(" ");
-                            sp.forEach(phrase => {
-                                if(phrase.match("http") === "http"){
-                                    const link = new URL(phrase);
-                                    urls_enfants.add(link.hostname);
-
-                                }
-                            });
-                        }
-                    });
-                    const principal_url = new URL(lien_principal);
-                    //console.log("____________________________________________________________________");
-                    //console.log("____________________________________________________________________");
+                        let $ = cheerio.load(body);  //loading of complete HTML body
                     
-                    urls_enfants.forEach(function(lien) {
-                        //const current_url = new URL(lien);
+                        $('a').each(function(index){
+                            const link = $(this).attr('href');
+                            if(link && link.match("http") == "http" ){
+                                if (validUrl.isUri(link)){
+                                    const link1 = new URL(link);
+                                    urls_enfants.add(link1.hostname);
+                                } 
+                                else {
+                                    console.log('Not a URI');
+                                }
+    
+    
+    
+                            }else{
+                                const link2 = $(this).text();
+                                var sp=link2.split(" ");
+                                sp.forEach(phrase => {
+                                    if(phrase && phrase.match("http") === "http"){
+                                        if (validUrl.isUri(phrase)){
+                                            const link = new URL(phrase);
+                                            urls_enfants.add(link.hostname);
+                                        } 
+                                        else {
+                                            console.log('Not a URI');
+                                        }
+    
+    
+                                    }
+                                });
+                            }
+                        });
+                        const principal_url = new URL(lien_principal);
+                        //console.log("____________________________________________________________________");
+                        //console.log("____________________________________________________________________");
                         
-                        if(principal_url.hostname.toString().match(principal_url.hostname.toString()) !=lien.toString() ){
+                        urls_enfants.forEach(function(lien) {
+                            //const current_url = new URL(lien);
                             
-                            //console.log(lien);
-                        }
-                    })
-                    resolve(new Site(lien_principal,urls_enfants, $("title").text()));
+                            if(principal_url.hostname.toString().match(principal_url.hostname.toString()) !=lien.toString() ){
+                                
+                                //console.log(lien);
+                            }
+                        })
+                        resolve(new Site(lien_principal,[...urls_enfants], $("title").text()));
+                    }
+                   
                 }
-               
-            }
-            )
-        });
+                )
+            });
+        } 
+        else {
+            console.log('lien_principal Not a URI');
+        }
+
+
 
     }
 
 
     async envoyer_resultat(sites){
-        const result = await this.instance.post('/urls/urls',{
+        const result = await this.instance.post('/urls/sites',{
             sites
         })
         return result;
@@ -90,14 +114,13 @@ class Crawler {
       try {
         
         const result=  await this.instance.post('/urls/feast',{
-          crawlerId: 1,
           maxUrlsCount: 25
         })
 
-        
+        console.log(result.data);
         const sites= await Promise.all(
-        result.data.map(async (couple) => {
-            return await crawler.lancerAnalyse(couple.url);
+        result.data.map(async (url) => {
+            return await crawler.lancerAnalyse(url);
         }));
         
         console.log("¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨");
@@ -115,6 +138,9 @@ class Crawler {
 
             try {
                 await this.recevoir();
+                const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
+
+                await sleep(100000); // sleep for 10 seconds
                 
             } catch (error) {
                 console.log("rien a faire")

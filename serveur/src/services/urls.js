@@ -71,6 +71,7 @@ const feast = async (crawler_session, max_urls_count) => {
 
   await markTaken(crawler_session.crawler_token, urls_not_consumed);
 
+  console.log(urls_not_consumed);
   return urls_not_consumed;
 };
 
@@ -84,28 +85,33 @@ const urlToNumber = (url) => {
 
 const stock = async (crawler_session, sites) => {
   const stock_sites = sites.map(async (site) => {
-    const url_enfants = Array.from(new Set(site.url_enfants));
+    const url_enfants = Array.from(new Set(site.set_enfant));
 
     await GetUrlsGraphCollection().insertOne({
-      url_parent: site.url_parent,
+      url_parent: site.lien_principal,
       url_enfants: url_enfants,
       creation_time: new Date(),
       crawler_token: crawler_session.crawler_token, // Crawler who has found the urls
       doc_version: 1,
     });
 
-    await GetUrlsFeastCollection().insertMany(
-      url_enfants.map((url) => ({
-        url,
-        distribution_number: Double(urlToNumber(url)),
-        taken: false,
-        taken_date: null,
-        taken_by: null,
-        creation_time: new Date(),
-        doc_version: 1,
-      }),
-      {ordered: false})
-    );
+    try {
+      await GetUrlsFeastCollection().insertMany(
+        url_enfants.map((url) => ({
+          url,
+          distribution_number: Double(urlToNumber(url)),
+          taken: false,
+          taken_date: null,
+          taken_by: null,
+          creation_time: new Date(),
+          doc_version: 1,
+        }),
+        {ordered: false})
+      );
+    } catch (error) {
+      console.log(error)
+    }
+
   });
 
   const result = await Promise.all(stock_sites);
