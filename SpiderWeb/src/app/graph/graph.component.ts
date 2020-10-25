@@ -15,51 +15,66 @@ export class GraphComponent implements OnInit {
 
   public nodeId: String;
   public clickedNode;
+  public options;
+  public nodes;
+  public network;
   myGraph: Graph[];
   urlFilter: any = { label: '' };
 
   constructor(private spinner: NgxSpinnerService, private apiService: ApiService) {}
   
   ngOnInit() {
-    //Chargement de 5sec avant l'affichage du graph
+    // Chargement de 5sec avant l'affichage du graph
     this.spinner.show();
     setTimeout(() => {
       this.spinner.hide();
     }, 1000);
 
-    // create an array with nodes
-    var nodes = new DataSet<Node, "id">([
-      { id: 1, label: "uSherbrooke", title: 'https://www.usherbrooke.ca/', },
+    // Appel de la requete getAllGraph pour récupérer les données du Graph
+    /*
+    this.apiService.getAllGraph().subscribe((data: Graph[]) => {
+      this.myGraph = data;
+    });*/
+
+    // Creer un array de noeuds
+    this.nodes = new DataSet<Node, "id">([
+      { id: 1, label: "uSherbrooke", title: 'https://www.usherbrooke.ca/' }, //group:'myGroup'
       { id: 2, label: "Facebook", title: 'https://www.facebook.ca/' },
       { id: 3, label: "Github", title: 'https://www.github.ca/' },
       { id: 4, label: "Gitlab", title: 'https://www.gitlab.ca/' },
       { id: 5, label: "Amazon", title: 'https://www.amazon.ca/' }
     ]);
 
+    // initialiser l'array Graph[]
     this.myGraph = [
       {
           id: '1',
-          label: 'uSherbrooke'
+          label: 'uSherbrooke',
+          title: 'https://www.usherbrooke.ca/'
       },
       {
           id: '2',
-          label: 'Facebook'
+          label: 'Facebook',
+          title: 'https://www.facebook.ca/'
       },
       {
           id: '3',
-          label: 'Github'
+          label: 'Github',
+          title: 'https://www.github.ca/'
       },
       {
           id: '4',
-          label: 'Gitlab'
+          label: 'Gitlab',
+          title: 'https://www.gitlab.ca/'
       },
       {
           id: '5',
-          label: 'Amazon'
+          label: 'Amazon',
+          title: 'https://www.amazon.ca/'
       }
   ];
 
-    // create an array with edges
+    // Creer un array de liens
     var edges = new DataSet<Edge, "id">([
       { id: 1, from: 1, to: 3 },
       { id: 2, from: 1, to: 2 },
@@ -71,27 +86,29 @@ export class GraphComponent implements OnInit {
     // create a network
     var container = document.getElementById("mynetwork");
     var data = {
-      nodes: nodes,
+      nodes: this.nodes,
       edges: edges
     };
 
-    // add network options
-    var options = {
+    // Ajouter les options du Graph
+    this.options = {
       height: "700px",
       physics:{enabled:true} //false si les noeuds ne se repositionnent pas automatiquement
     };
 
-    var network = new Network(container, data, options);
+    // Crée le Graph
+    this.network = new Network(container, data, this.options);
 
-    // display popup
-    network.on("showPopup", function(node){});
+    // Afficher le popup
+    this.network.on("showPopup", function(node){});
 
-    // get node id on doubleclick
-    network.on('doubleClick', (properties) =>  {
+    // Récuperer l'id du noeud au double click
+    this.network.on('doubleClick', (properties) =>  {
       this.nodeId = properties.nodes[0];
       console.log('nodeId', this.nodeId);
       this.getId(this.nodeId);
     });
+
 
   }
   
@@ -102,10 +119,12 @@ export class GraphComponent implements OnInit {
     });
   }
 
-  clickList(id){
-    console.log("clickList(id) " + id);
-    
+  // sélectionne sur le Graph le noeud sélectionné dans la liste d'urls
+  clickList(idUrl){
+    this.network.selectNodes([idUrl]);
+    console.log("clickList(id) " + idUrl);
   }
+  
 
 
     

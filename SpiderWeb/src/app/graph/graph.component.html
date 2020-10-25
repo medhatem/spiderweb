@@ -8,7 +8,7 @@
                     <table class="table">
                         <tbody>
                         <tr *ngFor="let Graph of myGraph | filterBy: urlFilter; let i = index">
-                            <button class="btn btn-list" (click)="clickList(Graph.label)">{{ Graph.label }}</button>
+                            <button class="btn btn-list" (click)="clickList(Graph.id)">{{ Graph.label }}</button>
                         </tr>
                         <td *ngIf="(myGraph | filterBy: urlFilter).length === 0">Auncun résultat...</td>
                         </tbody>
