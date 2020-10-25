@@ -1,4 +1,10 @@
-/*.progress-bar {
+  .graph {
+    background-color: #f4f4f4;
+    border-radius: .25rem;
+    border: 1px solid #dae0e5;
+  }
+
+  .progress-bar {
     background-color: #005587;
   }
 
@@ -9,21 +15,50 @@
   .container-urls {
     background-color: #f4f4f4;
     border-radius: .25rem;
-    margin-top: 16px;
-    height: 80%;
-    width: 15%;
-    position: absolute;
+    height: 100%;
+    width: 100%;
     border: 1px solid #dae0e5;
-;
+    padding: 15px;
   }
   
   .title-spiderweb {
-    text-align: center;
-    margin-top: 1rem;
     margin-bottom: 1rem;
+    font-size: large;
+  }
+
+  .title-list {
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+    font-size: medium;
   }
 
   .form-control:active, .form-control:focus {
     border-color: #00225cd4;
     box-shadow: 0 0 0 0.2rem #00225c8f;
-  }*/
+    margin-bottom: 10px;
+  }
+
+  .form-control {
+    margin-bottom: 10px;
+  }
+
+  .btn-list {
+    width: 100%;
+    color: black;
+    border-top: 1px solid #dae0e5;
+    border-radius: 0px;
+    text-align: left;
+  }
+  
+  .btn-list:active {
+    background-color: #dae0e5a3;
+    border-color: #dae0e5a3;
+  }
+  
+  .btn-list:focus {
+    box-shadow: none;
+  }
+  
+  .btn-list:hover {
+    background-color: #dae0e5;
+  }

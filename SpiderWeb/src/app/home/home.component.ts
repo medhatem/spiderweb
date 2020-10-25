@@ -9,14 +9,9 @@ import { ApiService } from './../api.service';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent {
-  title = 'SpiderWeb';
   postUrl: FormGroup;
 
-  constructor(private router: Router,
-    private fb: FormBuilder,
-    private apiService: ApiService,
-  ) {
-
+  constructor(private router: Router, private fb: FormBuilder, private apiService: ApiService,) {
     this.postUrl = this.fb.group({
       'url1': '',
       'url2': '',
