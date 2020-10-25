@@ -1,7 +1,6 @@
 const request = require('request');
 const cheerio = require('cheerio');
 const url = require('url');
-var validUrl = require('valid-url');
 const axios = require('axios');
 
 class Site {
@@ -26,76 +25,64 @@ class Crawler {
         let urls_enfants= new Set();
         
         console.log(lien_principal);
+        let lien_principal_valide=null;
+        try {
+            lien_principal_valide = new URL(lien_principal);
+          } catch (error) {
+            lien_principal_valide = new URL("https://"+lien_principal);
+          } 
 
-        if (validUrl.isUri(lien_principal)){
-            console.log('lien_principal is valid URI');
 
-            return new Promise(function (resolve, reject) {
-                request(lien_principal, function (err, res, body) {
-                    if(err)
-                    {
-                        //console.log(err);
-                        reject(err);
-                        return;
-                    }   
-                    else
-                    {
+        return new Promise(function (resolve, reject) {
+            request(lien_principal_valide.origin, function (err, res, body) {
+                if(err)
+                {
+                    reject(err);
+                    return;
+                }   
+                else
+                {
+            
+                    let $ = cheerio.load(body);  //loading of complete HTML body
                 
-                        let $ = cheerio.load(body);  //loading of complete HTML body
-                    
-                        $('a').each(function(index){
-                            const link = $(this).attr('href');
-                            if(link && link.match("http") == "http" ){
-                                if (validUrl.isUri(link)){
-                                    const link1 = new URL(link);
-                                    urls_enfants.add(link1.hostname);
-                                } 
-                                else {
-                                    console.log('Not a URI');
-                                }
-    
-    
-    
-                            }else{
-                                const link2 = $(this).text();
-                                var sp=link2.split(" ");
-                                sp.forEach(phrase => {
-                                    if(phrase && phrase.match("http") === "http"){
-                                        if (validUrl.isUri(phrase)){
+                    $('a').each(function(index){
+                        const link = $(this).attr('href');
+                        if(link && link.match("http") == "http" ){
+                            try {
+                                const link1 = new URL(link);
+                                urls_enfants.add(link1.hostname);
+                              } catch (error) {
+                                const link1 = new URL("https://"+link);
+                                urls_enfants.add(link1.hostname);
+                              }
+
+                        }else{
+                            const link2 = $(this).text();
+                            var sp=link2.split(" ");
+                            sp.forEach(phrase => {
+                                if(phrase && phrase.match("http") === "http"){
+                                    
+
+
+                                        try {
                                             const link = new URL(phrase);
                                             urls_enfants.add(link.hostname);
-                                        } 
-                                        else {
-                                            console.log('Not a URI');
-                                        }
-    
-    
-                                    }
-                                });
-                            }
-                        });
-                        const principal_url = new URL(lien_principal);
-                        //console.log("____________________________________________________________________");
-                        //console.log("____________________________________________________________________");
-                        
-                        urls_enfants.forEach(function(lien) {
-                            //const current_url = new URL(lien);
-                            
-                            if(principal_url.hostname.toString().match(principal_url.hostname.toString()) !=lien.toString() ){
-                                
-                                //console.log(lien);
-                            }
-                        })
-                        resolve(new Site(lien_principal,[...urls_enfants], $("title").text()));
-                    }
+                                          } catch (error) {
+                                            const link = new URL("https://"+phrase);
+                                            urls_enfants.add(link.hostname);
+                                          }
+                                }
+                            });
+                        }
+                    });
                    
+                    resolve(new Site(lien_principal,[...urls_enfants], $("title").text()));
                 }
-                )
-            });
-        } 
-        else {
-            console.log('lien_principal Not a URI');
-        }
+                
+            }
+            )
+        });
+
 
 
 
@@ -140,7 +127,7 @@ class Crawler {
                 await this.recevoir();
                 const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
 
-                await sleep(100000); // sleep for 10 seconds
+                await sleep(10000); // sleep for 10 seconds
                 
             } catch (error) {
                 console.log("rien a faire")
@@ -156,6 +143,5 @@ class Crawler {
   crawler = new Crawler();
 
   crawler.run();
-  
 
 
