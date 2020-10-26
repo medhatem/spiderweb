@@ -2,18 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 //const fetchUrls = require("../services/test-fetch-urls").FetchTest;
-const { fetchUrlsGraph, feast, stock } = require("../services/urls");
-
-/* GET all urls */
-router.get("/", async function (req, res, next) {
-  try {
-    const urls = await fetchUrlsGraph(req.query.urlparent);
-    res.status(200).send(urls);
-  } catch (error) {
-    res.status(404);
-    console.error(error);
-  }
-});
+const { feast, stock } = require("../services/urls");
 
 /*
   req.body.feast
@@ -27,7 +16,7 @@ router.post("/feast", async function (req, res, next) {
     const urls = await feast(req.session, req.body.maxUrlsCount);
     res.status(200).send(urls);
   } catch (error) {
-    res.status(404);
+    res.status(404).send();
     console.error(error);
   }
 });
@@ -51,7 +40,7 @@ router.post("/sites", async function (req, res, next) {
     const result = await stock(req.session, req.body.sites);
     res.status(201).send({ message: "success" });
   } catch (error) {
-    res.status(404);
+    res.status(404).send();
     console.error(error);
   }
 });
