@@ -93,7 +93,12 @@ export class GraphComponent implements OnInit {
     // Ajouter les options du Graph
     this.options = {
       height: "700px",
-      physics:{enabled:true} //false si les noeuds ne se repositionnent pas automatiquement
+
+      physics:{enabled:true}, //false si les noeuds ne se repositionnent pas automatiquement
+      interaction:{
+        hover: true,
+        navigationButtons: true
+      } 
     };
 
     // Crée le Graph

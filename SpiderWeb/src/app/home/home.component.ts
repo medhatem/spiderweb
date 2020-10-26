@@ -31,7 +31,10 @@ export class HomeComponent {
     document.getElementById("erreurUrl4").style.display = "none";
 
     let home = {
-      'data': '' + postUrl.url1 + '' + ', ' + '' + postUrl.url2 + '' + ', ' + '' + postUrl.url3 + '' + ', ' + '' + postUrl.url4 + '',
+      "url1": '' + postUrl.url1 + '',
+      "url2": '' + postUrl.url2 + '',
+      "url3": '' + postUrl.url3 + '',
+      "url4": '' + postUrl.url4 + ''
     }
 
     //Valider qu'aucun champ n'est vide
@@ -135,7 +138,7 @@ export class HomeComponent {
 
           //Requete post http
           this.apiService.AddUrl(home);
-          console.log('Post')
+          console.log(home)
           
           //Navigation
           this.router.navigate(['/graph']);

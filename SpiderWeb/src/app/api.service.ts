@@ -14,8 +14,8 @@ export class ApiService {
 
   /* Requete d'initialisation des URLs pour les crawlers */
   AddUrl(urlData) {
-    console.log('AddUrl(urlData) ' + urlData);
-    this.httpClient.post<any>(this.uri + '/add_urls/', urlData).subscribe(res => {
+    console.log(urlData);
+    this.httpClient.post<any>(this.uri + '/init/', urlData).subscribe(res => {
       this.response = res;
     });
   }
