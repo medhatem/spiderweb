@@ -23,12 +23,12 @@ export class ApiService {
   /* Requete du premier affichage du graph */
   getAllGraph() {
     console.log('getAllGraph()');
-    return this.httpClient.get<any>(this.uri + '/get_all_graph/').pipe();
+    return this.httpClient.get<any>(this.uri + '/graph/').pipe();
   }
 
   /* Requete d'affichage des enfants de niveau 3 d'un noeud */
   getNodeChildren(nodeId) {
     console.log('getNodeChildren(nodeId) ' + nodeId);
-    return this.httpClient.get<any>(this.uri + '/get_node_children/' + nodeId).pipe();
+    return this.httpClient.get<any>(this.uri + '/graph?urlparent=' + nodeId).pipe();
   }
 }
