@@ -5,26 +5,25 @@ const Double = require("mongodb").Double;
 const crypto = require("crypto");
 
 const fetchUrlsGraph = async (urlparent) => {
-  //const getAllDocs = await GetUrlsGraphCollection().find().toArray();
-
-  const noeud_edges= await GetUrlsGraphCollection().aggregate( [
-    { "$match": { "url_parent": urlparent  } },
-       {$graphLookup: {
+  const noeud_edges = await GetUrlsGraphCollection()
+    .aggregate([
+      { $match: { url_parent: urlparent } },
+      {
+        $graphLookup: {
           from: "urls_graph",
           startWith: "$url_parent",
           connectFromField: "url_enfants",
           connectToField: "url_parent",
           maxDepth: 3,
           depthField: "numConnections",
-          as: "edges"
-       }}
-    
- ] ).toArray();
- 
- return noeud_edges[0];
+          as: "edges",
+        },
+      },
+    ])
+    .toArray();
 
+  return noeud_edges[0];
 };
-
 
 const createAfterFeastUpdateObject = (crawler_token, url) => {
   return {
@@ -83,6 +82,35 @@ const urlToNumber = (url) => {
   return Number(`0x${url_hashed_slice}`);
 };
 
+const stock_to_feast_urls = async (distinct_urls) => {
+  const urls_to_not_insert_obj = await GetUrlsFeastCollection()
+    .find({ url: { $in: distinct_urls } }, { url: 1, _id: 0 })
+    .toArray();
+  const urls_to_not_insert = urls_to_not_insert_obj.map((obj) => obj.url);
+  const urls_to_save = distinct_urls.filter((url) => urls_to_not_insert.indexOf(url) < 0);
+
+  if (urls_to_save.length === 0) {
+    return false;
+  }
+
+  const result = await GetUrlsFeastCollection().insertMany(
+    urls_to_save.map(
+      (url) => ({
+        url,
+        distribution_number: Double(urlToNumber(url)),
+        taken: false,
+        taken_date: null,
+        taken_by: null,
+        creation_time: new Date(),
+        doc_version: 1,
+      }),
+      { ordered: false }
+    )
+  );
+
+  return result;
+};
+
 const stock = async (crawler_session, sites) => {
   const stock_sites = sites.map(async (site) => {
     const url_enfants = Array.from(new Set(site.set_enfant));
@@ -95,27 +123,17 @@ const stock = async (crawler_session, sites) => {
       doc_version: 1,
     });
 
-    try {
-      await GetUrlsFeastCollection().insertMany(
-        url_enfants.map((url) => ({
-          url,
-          distribution_number: Double(urlToNumber(url)),
-          taken: false,
-          taken_date: null,
-          taken_by: null,
-          creation_time: new Date(),
-          doc_version: 1,
-        }),
-        {ordered: false})
-      );
-    } catch (error) {
-      console.log(error)
-    }
-
+    await stock_to_feast_urls(url_enfants);
   });
 
-  const result = await Promise.all(stock_sites);
+  const results = await Promise.all(stock_sites);
+  return results;
+};
+
+const init_stock = async (urls) => {
+  const urls_to_stock = Array.from(new Set(urls));
+  const result = await stock_to_feast_urls(urls_to_stock);
   return result;
 };
 
-module.exports = { fetchUrlsGraph, feast, stock };
+module.exports = { fetchUrlsGraph, feast, stock, init_stock };
