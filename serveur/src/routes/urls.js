@@ -37,6 +37,7 @@ router.post("/feast", async function (req, res, next) {
 /* POST one to many urls */
 router.post("/sites", async function (req, res, next) {
   try {
+    console.log(req.body.sites);
     const result = await stock(req.session, req.body.sites);
     res.status(201).send({ message: "success" });
   } catch (error) {

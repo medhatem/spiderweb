@@ -70,6 +70,7 @@ const feast = async (crawler_session, max_urls_count) => {
 
   await markTaken(crawler_session.crawler_token, urls_not_consumed);
 
+  console.log(urls_not_consumed);
   return urls_not_consumed;
 };
 
@@ -112,10 +113,10 @@ const stock_to_feast_urls = async (distinct_urls) => {
 
 const stock = async (crawler_session, sites) => {
   const stock_sites = sites.map(async (site) => {
-    const url_enfants = Array.from(new Set(site.url_enfants));
+    const url_enfants = Array.from(new Set(site.set_enfant));
 
     await GetUrlsGraphCollection().insertOne({
-      url_parent: site.url_parent,
+      url_parent: site.lien_principal,
       url_enfants: url_enfants,
       creation_time: new Date(),
       crawler_token: crawler_session.crawler_token, // Crawler who has found the urls
