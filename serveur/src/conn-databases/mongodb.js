@@ -17,12 +17,48 @@ const mongodbOpenConnexion = async (db_name = "crawlers") => {
   const client = clients.mongo_client;
   await client.connect();
   databases.crawlers = client.db(db_name);
+};
+
+const mongoDbCloseConnexion = async () => {
+  if(!(clients.mongo_client.isConnected())){
+    console.error("Crawler database connexion not initialize");
+    return
+  }
+
+  await clients.mongo_client.close();
+}
+
+const mongodbCreateCollections = async () => {
+  if(!clients.mongo_client.isConnected()){
+    console.error("Crawler database connexion not initialize");
+    return
+  }
+
+  if(!databases.crawlers){
+    console.error(" no crawlers database exist");
+    return
+  }
+  
   // Create Index only if doesn't exists
   await databases.crawlers.collection("urls_graph").createIndex({ url_parent: 1 }, { unique: true });
   await databases.crawlers.collection("urls_feast").createIndex({ url: 1 }, { unique: true });
   await databases.crawlers.collection("crawlers_session").createIndex({ crawler_token: 1 }, { unique: true });
   // On va conserver l'id pour les sessions de crawler pour que prochainement on puisse changer le token
-};
+}
+
+const mongodbDeleteDatabase = async () => {
+  if(!clients.mongo_client.isConnected()){
+    console.error("Crawler database connexion not initialize");
+    return
+  }
+
+  if(!databases.crawlers){
+    console.error(" no crawlers database exist");
+    return
+  }
+
+  await databases.crawlers.dropDatabase();
+}
 
 exports.GetUrlsGraphCollection = () => {
   return databases.crawlers.collection("urls_graph");
@@ -36,4 +72,7 @@ exports.GetCrawlersSessionCollection = () => {
   return databases.crawlers.collection("crawlers_session");
 };
 
-exports.MongoDbOpenConnexionFct = mongodbOpenConnexion;
+exports.MongoDbOpenConnexion = mongodbOpenConnexion;
+exports.mongodbCreateCollections = mongodbCreateCollections;
+exports.MongodbDeleteDatabase = mongodbDeleteDatabase;
+exports.MongoDbCloseConnexion = mongoDbCloseConnexion;
