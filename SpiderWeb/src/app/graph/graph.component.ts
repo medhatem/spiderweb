@@ -4,7 +4,6 @@ import { Network, DataSet, Edge, Node } from "vis-network/standalone";
 import { ApiService } from './../api.service';
 import { Graph } from '../model/graph.model';
 
-
 @Component({
   selector: 'app-graph',
   templateUrl: './graph.component.html',

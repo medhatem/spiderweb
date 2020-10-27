@@ -15,7 +15,7 @@ class Site {
 
 class Crawler {
     constructor() {
-        this.instance= axios.create({baseURL: 'http://127.0.0.1:3000',headers:{Authorization: "mSlu20JMWtM/RSrfxWVtvJuRlEg="}})
+        this.instance= axios.create({baseURL: 'http://127.0.0.1:3000',headers:{Authorization: "lmTdME8ZKlLpx9qyiuf5T17NIoE="}})
     }
 
 
