@@ -8,7 +8,6 @@ const app = require("../app");
 const debug = require("debug")("serveur:server");
 const http = require("http");
 const startup = require("./startup");
-const { error } = require("console");
 
 /**
  * Get port from environment and store in Express.

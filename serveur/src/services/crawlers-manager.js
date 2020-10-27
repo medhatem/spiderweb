@@ -1,8 +1,6 @@
 const crypto = require("crypto");
 const GetCrawlersSessionCollection = require("../conn-databases/mongodb").GetCrawlersSessionCollection;
 
-const secret = process.env.CRAWLER_TOKEN_SECRET;
-
 const authentication = async (authentication_token) => {
   result = await GetCrawlersSessionCollection().findOne({ crawler_token: { $eq: authentication_token } });
   return result;
@@ -17,6 +15,7 @@ const deconnection = async (authentication_token) => {
 };
 
 const subscribe = async (crawlers_secret) => {
+  const secret = process.env.CRAWLER_TOKEN_SECRET;
   if (crawlers_secret != secret) {
     return false;
   }
