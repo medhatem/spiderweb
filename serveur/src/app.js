@@ -1,12 +1,14 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
+const cors = require("cors");
 
 const indexRouter = require("./routes/index");
 const urlsRouter = require("./routes/urls");
 const crawlers_auth_mw = require("./routes/crawlers-auth-middleware");
 
 const app = express();
+app.use(cors());
 
 app.use(logger("dev"));
 app.use(express.json());
