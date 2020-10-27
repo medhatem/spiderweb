@@ -1,12 +1,12 @@
-const GetUrlsCollection = require("../conn-databases/mongodb").GetUrlsCollection;
+const GetUrlsFeastCollection = require("../conn-databases/mongodb").GetUrlsFeastCollection;
 
 const populateTest = async () => {
-  const docCount = await GetUrlsCollection().countDocuments();
+  const docCount = await GetUrlsFeastCollection().countDocuments();
   if (docCount > 0) {
     return;
   }
 
-  await GetUrlsCollection().bulkWrite([
+  await GetUrlsFeastCollection().bulkWrite([
     { insertOne: { document: { url: "https://github.com/" } } },
     { insertOne: { document: { url: "https://facebook.com/" } } },
     { insertOne: { document: { url: "https://usherbrooke.ca/" } } },
@@ -18,7 +18,7 @@ const populateTest = async () => {
 const fetchTest = async () => {
   await populateTest();
 
-  const getAllDocs = await GetUrlsCollection().find().toArray();
+  const getAllDocs = await GetUrlsFeastCollection().find().toArray();
   return getAllDocs;
 };
 

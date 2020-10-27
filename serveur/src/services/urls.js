@@ -4,9 +4,43 @@ const allTokensOfActiveCrawlers = require("../services/crawlers-manager").allTok
 const Double = require("mongodb").Double;
 const crypto = require("crypto");
 
-const fetchUrlsGraph = async () => {
-  const getAllDocs = await GetUrlsGraphCollection().find().toArray();
-  return getAllDocs;
+const fetchAllUrlsGraph = async () => {
+  const noeud_edges = await GetUrlsGraphCollection()
+    .find({})
+    .project({ _id: 0, url_parent: 1, url_enfants: 1 })
+    .toArray();
+  return { edges: noeud_edges };
+};
+
+const fetchOneNodeUrlsGraph = async (urlparent) => {
+  const noeud_edges = await GetUrlsGraphCollection()
+    .aggregate([
+      { $match: { url_parent: urlparent } },
+      {
+        $graphLookup: {
+          from: "urls_graph",
+          startWith: "$url_parent",
+          connectFromField: "url_enfants",
+          connectToField: "url_parent",
+          maxDepth: 3,
+          depthField: "numConnections",
+          as: "edges",
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          url_parent: 1,
+          url_enfants: 1,
+          "edges.url_parent": 1,
+          "edges.url_enfants": 1,
+          "edges.numConnections": 1,
+        },
+      },
+    ])
+    .toArray();
+
+  return { edges: noeud_edges[0] ? noeud_edges[0].edges : [] };
 };
 
 const createAfterFeastUpdateObject = (crawler_token, url) => {
@@ -54,6 +88,7 @@ const feast = async (crawler_session, max_urls_count) => {
 
   await markTaken(crawler_session.crawler_token, urls_not_consumed);
 
+  console.log(urls_not_consumed);
   return urls_not_consumed;
 };
 
@@ -65,20 +100,20 @@ const urlToNumber = (url) => {
   return Number(`0x${url_hashed_slice}`);
 };
 
-const stock = async (crawler_session, sites) => {
-  const stock_sites = sites.map(async (site) => {
-    const url_enfants = Array.from(new Set(site.url_enfants));
+const stock_to_feast_urls = async (distinct_urls) => {
+  const urls_to_not_insert_obj = await GetUrlsFeastCollection()
+    .find({ url: { $in: distinct_urls } }, { url: 1, _id: 0 })
+    .toArray();
+  const urls_to_not_insert = urls_to_not_insert_obj.map((obj) => obj.url);
+  const urls_to_save = distinct_urls.filter((url) => urls_to_not_insert.indexOf(url) < 0);
 
-    await GetUrlsGraphCollection().insertOne({
-      url_parent: site.url_parent,
-      url_enfants: url_enfants,
-      creation_time: new Date(),
-      crawler_token: crawler_session.crawler_token, // Crawler who has found the urls
-      doc_version: 1,
-    });
+  if (urls_to_save.length === 0) {
+    return false;
+  }
 
-    await GetUrlsFeastCollection().insertMany(
-      url_enfants.map((url) => ({
+  const result = await GetUrlsFeastCollection().insertMany(
+    urls_to_save.map(
+      (url) => ({
         url,
         distribution_number: Double(urlToNumber(url)),
         taken: false,
@@ -86,12 +121,37 @@ const stock = async (crawler_session, sites) => {
         taken_by: null,
         creation_time: new Date(),
         doc_version: 1,
-      }))
-    );
-  });
+      }),
+      { ordered: false }
+    )
+  );
 
-  const result = await Promise.all(stock_sites);
   return result;
 };
 
-module.exports = { fetchUrlsGraph, feast, stock };
+const stock = async (crawler_session, sites) => {
+  const stock_sites = sites.map(async (site) => {
+    const url_enfants = Array.from(new Set(site.set_enfant));
+
+    await GetUrlsGraphCollection().insertOne({
+      url_parent: site.lien_principal,
+      url_enfants: url_enfants,
+      creation_time: new Date(),
+      crawler_token: crawler_session.crawler_token, // Crawler who has found the urls
+      doc_version: 1,
+    });
+
+    await stock_to_feast_urls(url_enfants);
+  });
+
+  const results = await Promise.all(stock_sites);
+  return results;
+};
+
+const init_stock = async (urls) => {
+  const urls_to_stock = Array.from(new Set(urls));
+  const result = await stock_to_feast_urls(urls_to_stock);
+  return result;
+};
+
+module.exports = { fetchAllUrlsGraph, fetchOneNodeUrlsGraph, feast, stock, init_stock };
