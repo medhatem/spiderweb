@@ -42,7 +42,8 @@ const subscribe = async (crawlers_secret) => {
 
 const allTokensOfActiveCrawlers = async () => {
   const result = await GetCrawlersSessionCollection()
-    .find({ active: { $eq: true } }, { projection: { _id: 0, crawler_token: 1 } })
+    .find({ active: { $eq: true } })
+    .project({ _id: 0, crawler_token: 1 })
     .toArray();
   return result;
 };
