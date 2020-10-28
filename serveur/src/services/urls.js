@@ -12,7 +12,7 @@ const fetchAllUrlsGraph = async () => {
   return { edges: noeud_edges };
 };
 
-const fetchOneNodeUrlsGraph = async (urlparent) => {
+const fetchOneNodeUrlsGraph = async (urlparent, maxDepth = 3) => {
   const noeud_edges = await GetUrlsGraphCollection()
     .aggregate([
       { $match: { url_parent: urlparent } },
@@ -22,7 +22,7 @@ const fetchOneNodeUrlsGraph = async (urlparent) => {
           startWith: "$url_parent",
           connectFromField: "url_enfants",
           connectToField: "url_parent",
-          maxDepth: 3,
+          maxDepth,
           depthField: "numConnections",
           as: "edges",
         },
@@ -87,8 +87,7 @@ const feast = async (crawler_session, max_urls_count) => {
   ).map(({ url }) => url);
 
   await markTaken(crawler_session.crawler_token, urls_not_consumed);
-
-  console.log(urls_not_consumed);
+  
   return urls_not_consumed;
 };
 
@@ -130,21 +129,26 @@ const stock_to_feast_urls = async (distinct_urls) => {
 };
 
 const stock = async (crawler_session, sites) => {
-  const stock_sites = sites.map(async (site) => {
-    const url_enfants = Array.from(new Set(site.set_enfant));
+  const feast_set_url_enfants = new Set();
+  const promise_array = [];
+  sites.forEach((site) => {
+    url_enfants = Array.from(new Set(site.set_enfant));
 
-    await GetUrlsGraphCollection().insertOne({
+    const ops_insert_to_graph_promise = GetUrlsGraphCollection().insertOne({
       url_parent: site.lien_principal,
-      url_enfants: url_enfants,
+      url_enfants,
       creation_time: new Date(),
       crawler_token: crawler_session.crawler_token, // Crawler who has found the urls
       doc_version: 1,
     });
 
-    await stock_to_feast_urls(url_enfants);
+    promise_array.push(ops_insert_to_graph_promise);
+    url_enfants.forEach(url => feast_set_url_enfants.add(url));
   });
 
-  const results = await Promise.all(stock_sites);
+  promise_array.push(stock_to_feast_urls([...feast_set_url_enfants]));
+
+  const results = await Promise.all(promise_array);
   return results;
 };
 

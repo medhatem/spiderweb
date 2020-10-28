@@ -33,7 +33,7 @@ router.get("/graph", async function (req, res, next) {
 
 router.post("/init", async (req, res, next) => {
   try {
-    const urls = req.body.urls.split(",").map((url) => url.trim());
+    const urls = req.body.urls;
     const result = await init_stock(urls);
     if (!result) {
       res.status(304).send();
