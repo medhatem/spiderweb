@@ -1,8 +1,8 @@
-const { MongoDbOpenConnexion , MongodbCreateDatabase } = require("../conn-databases/mongodb");
+const { MongoDbOpenConnexion, MongodbCreateCollections } = require("../conn-databases/mongodb");
 
 async function startup() {
   await MongoDbOpenConnexion();
-  await MongodbCreateDatabase();
+  await MongodbCreateCollections();
 }
 
 module.exports = startup;

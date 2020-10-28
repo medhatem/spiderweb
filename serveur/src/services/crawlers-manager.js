@@ -6,7 +6,7 @@ const CRAWLER_LOGOUT_TIMEOUT = 10 * MS_PER_MINUTE; // ms
 
 const authentication = async (authentication_token) => {
   session = await GetCrawlersSessionCollection().findOne({ crawler_token: { $eq: authentication_token } });
-  if(!session) {
+  if (!session) {
     return false;
   }
 
@@ -15,7 +15,7 @@ const authentication = async (authentication_token) => {
     { $set: { last_auth: new Date() } }
   );
 
-  if(!update_result) {
+  if (!update_result) {
     return false;
   }
 
@@ -57,7 +57,13 @@ const subscribe = async (crawlers_secret) => {
 
 const allTokensOfActiveCrawlers = async () => {
   const result = await GetCrawlersSessionCollection()
-    .find({$and: [{ active: { $eq: true } }, {last_auth: {$gt: new Date(new Date() - CRAWLER_LOGOUT_TIMEOUT)}}, {last_auth: {$lte: new Date()}} ]})
+    .find({
+      $and: [
+        { active: { $eq: true } },
+        { last_auth: { $gt: new Date(new Date() - CRAWLER_LOGOUT_TIMEOUT) } },
+        { last_auth: { $lte: new Date() } },
+      ],
+    })
     .project({ _id: 0, crawler_token: 1 })
     .toArray();
   return result;

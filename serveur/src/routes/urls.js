@@ -5,7 +5,7 @@ const router = express.Router();
 const { feast, stock } = require("../services/urls");
 
 /*
-  req.body.feast
+  req.body.feast 
   {
     maxUrlsCount: Int
   }

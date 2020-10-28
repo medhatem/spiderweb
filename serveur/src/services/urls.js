@@ -87,7 +87,7 @@ const feast = async (crawler_session, max_urls_count) => {
   ).map(({ url }) => url);
 
   await markTaken(crawler_session.crawler_token, urls_not_consumed);
-  
+
   return urls_not_consumed;
 };
 
@@ -143,7 +143,7 @@ const stock = async (crawler_session, sites) => {
     });
 
     promise_array.push(ops_insert_to_graph_promise);
-    url_enfants.forEach(url => feast_set_url_enfants.add(url));
+    url_enfants.forEach((url) => feast_set_url_enfants.add(url));
   });
 
   promise_array.push(stock_to_feast_urls([...feast_set_url_enfants]));
