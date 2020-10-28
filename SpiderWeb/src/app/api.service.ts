@@ -22,7 +22,7 @@ export class ApiService {
 
   /* Requete du premier affichage du graph */
   getAllGraph() {
-    console.log('getAllGraph()');
+    console.log('getAllGraph() Api Services');
     return this.httpClient.get<any>(this.uri + '/graph/').pipe();
   }
 

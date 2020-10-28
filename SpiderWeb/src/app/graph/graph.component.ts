@@ -30,10 +30,10 @@ export class GraphComponent implements OnInit {
     }, 1000);
 
     // Appel de la requete getAllGraph pour récupérer les données du Graph
-    /*
     this.apiService.getAllGraph().subscribe((data: Graph[]) => {
       this.myGraph = data;
-    });*/
+      console.log('getAllGraph ', this.myGraph);
+    });
 
     // Creer un array de noeuds
     this.nodes = new DataSet<Node, "id">([

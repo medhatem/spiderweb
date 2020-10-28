@@ -20,6 +20,7 @@ router.get("/graph", async function (req, res, next) {
   try {
     const urls = await fetchUrlsGraph(req.query.urlparent);
     res.status(200).send(urls);
+	
   } catch (error) {
     res.status(404).send();
     console.error(error);
