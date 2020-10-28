@@ -12,7 +12,7 @@ const fetchAllUrlsGraph = async () => {
   return { edges: noeud_edges };
 };
 
-const fetchOneNodeUrlsGraph = async (urlparent) => {
+const fetchOneNodeUrlsGraph = async (urlparent, maxDepth = 3) => {
   const noeud_edges = await GetUrlsGraphCollection()
     .aggregate([
       { $match: { url_parent: urlparent } },
@@ -22,7 +22,7 @@ const fetchOneNodeUrlsGraph = async (urlparent) => {
           startWith: "$url_parent",
           connectFromField: "url_enfants",
           connectToField: "url_parent",
-          maxDepth: 3,
+          maxDepth,
           depthField: "numConnections",
           as: "edges",
         },
