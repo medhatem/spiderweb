@@ -3,7 +3,7 @@ const urls = require("../services/urls");
 const router = express.Router();
 const subscribe = require("../services/crawlers-manager").subscribe;
 
-const { fetchUrlsGraph, init_stock } = require("../services/urls");
+const { fetchAllUrlsGraph, fetchOneNodeUrlsGraph, init_stock } = require("../services/urls");
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
@@ -18,9 +18,13 @@ router.get("/", function (req, res, next) {
 /* GET all urls */
 router.get("/graph", async function (req, res, next) {
   try {
-    const urls = await fetchUrlsGraph(req.query.urlparent);
-    res.status(200).send(urls);
-	
+    if (req.query.urlparent) {
+      const urls = await fetchOneNodeUrlsGraph(req.query.urlparent);
+      res.status(200).send(urls);
+    } else {
+      const urls = await fetchAllUrlsGraph();
+      res.status(200).send(urls);
+    }
   } catch (error) {
     res.status(404).send();
     console.error(error);

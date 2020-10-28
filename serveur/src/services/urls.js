@@ -4,7 +4,15 @@ const allTokensOfActiveCrawlers = require("../services/crawlers-manager").allTok
 const Double = require("mongodb").Double;
 const crypto = require("crypto");
 
-const fetchUrlsGraph = async (urlparent) => {
+const fetchAllUrlsGraph = async () => {
+  const noeud_edges = await GetUrlsGraphCollection()
+    .find({})
+    .project({ _id: 0, url_parent: 1, url_enfants: 1 })
+    .toArray();
+  return { edges: noeud_edges };
+};
+
+const fetchOneNodeUrlsGraph = async (urlparent) => {
   const noeud_edges = await GetUrlsGraphCollection()
     .aggregate([
       { $match: { url_parent: urlparent } },
@@ -19,10 +27,20 @@ const fetchUrlsGraph = async (urlparent) => {
           as: "edges",
         },
       },
+      {
+        $project: {
+          _id: 0,
+          url_parent: 1,
+          url_enfants: 1,
+          "edges.url_parent": 1,
+          "edges.url_enfants": 1,
+          "edges.numConnections": 1,
+        },
+      },
     ])
     .toArray();
 
-  return noeud_edges[0];
+  return { edges: noeud_edges[0] ? noeud_edges[0].edges : [] };
 };
 
 const createAfterFeastUpdateObject = (crawler_token, url) => {
@@ -136,4 +154,4 @@ const init_stock = async (urls) => {
   return result;
 };
 
-module.exports = { fetchUrlsGraph, feast, stock, init_stock };
+module.exports = { fetchAllUrlsGraph, fetchOneNodeUrlsGraph, feast, stock, init_stock };
