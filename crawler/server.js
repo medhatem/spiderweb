@@ -15,10 +15,19 @@ class Site {
 
 class Crawler {
     constructor() {
-        this.instance= axios.create({baseURL: 'http://127.0.0.1:3000',headers:{Authorization: "mSlu20JMWtM/RSrfxWVtvJuRlEg="}})
+      this.instance= null;
     }
-
-
+    
+    async subscribe(){
+      try {
+      const res= await axios.post('http://127.0.0.1:3000/subscribe',{ "secret": "ii" });
+      const token= res.data.crawler_token;
+      console.log(token);
+      this.instance= axios.create({baseURL: 'http://127.0.0.1:3000',headers:{Authorization: token}})
+      }catch (e) {
+        console.error(e);
+      }
+    }
 
     // function pour analyser la page d'un lien recu  
     lancerAnalyse(lien_principal){
@@ -82,12 +91,7 @@ class Crawler {
             }
             )
         });
-
-
-
-
     }
-
 
     async envoyer_resultat(sites){
         const result = await this.instance.post('/urls/sites',{
@@ -121,7 +125,10 @@ class Crawler {
     }
 
     async run(){
-        while(true){
+        try {
+          await this.subscribe();
+
+          while(true){
 
             try {
                 await this.recevoir();
@@ -136,12 +143,19 @@ class Crawler {
                 await sleep(10000); // sleep for 10 seconds
 
             }
-        } 
+        }
+        } catch (e) {
+          console.log('erreeeeur:'+ e)
+        }
+ 
     }
+
   }
 
   crawler = new Crawler();
 
   crawler.run();
 
+ crawler2 = new Crawler();
 
+  crawler2.run();
