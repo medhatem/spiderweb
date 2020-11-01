@@ -28,7 +28,7 @@ export class ApiService {
 
   /* Requete d'affichage des enfants de niveau 3 d'un noeud */
   getNodeChildren(nodeId) {
-    console.log('getNodeChildren(nodeId) ' + nodeId);
+    console.log('getNodeChildren(nodeId) ', nodeId);
     return this.httpClient.get<any>(this.uri + '/graph?urlparent=' + nodeId).pipe();
   }
 }

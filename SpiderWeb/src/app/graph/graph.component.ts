@@ -16,6 +16,11 @@ export class GraphComponent implements OnInit {
   public clickedNode;
   public options;
   public nodes;
+  public edges;
+  public nodesArray;
+  public edgesArray;
+  public container;
+  public datas;
   public network;
   myGraph: Graph[];
   urlFilter: any = { label: '' };
@@ -33,8 +38,58 @@ export class GraphComponent implements OnInit {
     this.apiService.getAllGraph().subscribe((data: Graph[]) => {
       this.myGraph = data;
       console.log('getAllGraph ', this.myGraph);
-    });
 
+      const noeud_edge = this.miseEnForme(this.myGraph);
+      console.log(this.miseEnForme(this.myGraph));
+
+      this.nodes= noeud_edge.noeud;
+      console.log('this.nodes ', this.nodes);
+
+      this.edges= noeud_edge.edges;
+      console.log('this.edges ', this.edges);
+
+      // Creer un array de noeuds
+      this.nodesArray = new DataSet<Node, "id">(this.nodes);
+      console.log("this.nodesArray ", this.nodesArray);
+
+      // Creer un array de liens
+      this.edgesArray = new DataSet<Edge, "id">(this.edges);
+      console.log("this.edgesArray ", this.edgesArray);
+    
+      // create a network
+      this.container = document.getElementById("mynetwork");
+      this.datas = {
+      nodes: this.nodesArray,
+      edges: this.edgesArray
+      };
+      console.log("datas ", this.datas);
+
+      // Ajouter les options du Graph
+      this.options = {
+        height: "700px",
+        physics:{enabled:true}, //false si les noeuds ne se repositionnent pas automatiquement
+        interaction:{navigationButtons: true}
+      };
+
+      console.log("ici");
+
+      // Crée le Graph
+      this.network = new Network(this.container, this.datas, this.options);
+      console.log("this.network ", this.network);
+
+      // Afficher le popup
+     //this.network.on("showPopup", function(nodes){});
+
+      // Récuperer l'id du noeud au double click
+     this.network.on('doubleClick', (properties) =>  {
+       this.nodeId = properties.nodes[0];
+       console.log('nodeIdd', this.nodeId);
+       this.getId(this.nodeId);
+     });
+
+    });
+    
+ /*   
     // Creer un array de noeuds
     this.nodes = new DataSet<Node, "id">([
       { id: 1, label: "uSherbrooke", title: 'https://www.usherbrooke.ca/' }, //group:'myGroup'
@@ -71,55 +126,52 @@ export class GraphComponent implements OnInit {
           label: 'Amazon',
           title: 'https://www.amazon.ca/'
       }
-  ];
+    ];
 
     // Creer un array de liens
-    var edges = new DataSet<Edge, "id">([
-      { id: 1, from: 1, to: 3 },
-      { id: 2, from: 1, to: 2 },
-      { id: 3, from: 2, to: 4 },
-      { id: 4, from: 2, to: 5 },
-      { id: 5, from: 3, to: 3 }
+    this.edges = new DataSet<Edge, "id">([
+      { from: 1, to: 3 },
+      { from: 1, to: 2 },
+      { from: 2, to: 4 },
+      { from: 2, to: 5 },
+      { from: 3, to: 3 }
     ]);
-    
+
     // create a network
     var container = document.getElementById("mynetwork");
     var data = {
       nodes: this.nodes,
-      edges: edges
+      edges: this.edges
     };
+    console.log("data ", data);
 
     // Ajouter les options du Graph
     this.options = {
       height: "700px",
-
-      physics:{enabled:true}, //false si les noeuds ne se repositionnent pas automatiquement
-      interaction:{
-        hover: true,
-        navigationButtons: true
-      } 
+      physics:{enabled:true} //false si les noeuds ne se repositionnent pas automatiquement
     };
 
     // Crée le Graph
     this.network = new Network(container, data, this.options);
+    console.log("this.network ", this.network);
 
-    // Afficher le popup
-    this.network.on("showPopup", function(node){});
+     // Afficher le popup
+     this.network.on("showPopup", function(node){});
 
-    // Récuperer l'id du noeud au double click
-    this.network.on('doubleClick', (properties) =>  {
-      this.nodeId = properties.nodes[0];
-      console.log('nodeId', this.nodeId);
-      this.getId(this.nodeId);
-    });
-
+     // Récuperer l'id du noeud au double click
+     this.network.on('doubleClick', (properties) =>  {
+       this.nodeId = properties.nodes[0];
+       console.log('nodeId', this.nodeId);
+       this.getId(this.nodeId);
+     });*/
+   
 
   }
   
   // Appel de la requete GetAllGraph afin d'afficher un premier graph
   getId(id){
     this.apiService.getNodeChildren(id).subscribe((data) => {
-    console.log("getNodeChildren(id) " + data);
+    console.log("getNodeChildren(id) ", data);
     });
   }
 
@@ -128,8 +180,22 @@ export class GraphComponent implements OnInit {
     this.network.selectNodes([idUrl]);
     console.log("clickList(id) " + idUrl);
   }
+
   
+  //mise en forme pour viz
+//retournne une liste de noeud et de edges
+  miseEnForme(noeud_edge){
+    var noeud= new Map();
+    var edges= new Map();
+ 
+    noeud_edge.edges.forEach( element => {
+      noeud.set(element.url_parent, {id: element.url_parent, label: element.url_parent});
+      element.url_enfants.forEach(url => {
+        noeud.set(url, {id: url, label: url});
+        edges.set(element.url_parent + url, {from: element.url_parent, to: url});
+       })
+    });
+    return {noeud : Array.from(noeud.values()),edges : Array.from(edges.values())};
+  }
 
-
-    
 }

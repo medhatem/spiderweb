@@ -6,12 +6,7 @@
                 <h6 class="title-spiderweb">Liste des URLs trouvés:</h6>
                 <input class="form-control" type="text" [(ngModel)]="urlFilter.label" placeholder="Chercher">
                     <table class="table">
-                        <tbody>
-                        <tr *ngFor="let Graph of myGraph | filterBy: urlFilter; let i = index">
-                            <button class="btn btn-list" (click)="clickList(Graph.id)">{{ Graph.label }}</button>
-                        </tr>
-                        <td *ngIf="(myGraph | filterBy: urlFilter).length === 0">Auncun résultat...</td>
-                        </tbody>
+
                     </table>
             </div> 
         </div>
@@ -20,3 +15,12 @@
         </div>
     </div>
 </div>
+
+<!--
+<tbody>
+    <tr *ngFor="let Graph of myGraph | filterBy: urlFilter; let i = index">
+        <button class="btn btn-list" (click)="clickList(Graph.id)">{{ Graph.label }}</button>
+    </tr>
+    <td *ngIf="(myGraph | filterBy: urlFilter).length === 0">Auncun résultat...</td>
+    </tbody>
+    -->
