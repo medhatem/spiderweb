@@ -22,4 +22,8 @@ a.navbar-brand, a.navbar-brand:hover, a.navbar-brand:active, a.navbar-brand:focu
   .navbar {
     background: linear-gradient(90deg, #005587, 20%, #00225c);
   }
+
+  .container {
+    max-width: 1500px !important;
+  }
   

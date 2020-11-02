@@ -1,4 +1,4 @@
-export  interface Graph {
+export  interface Urls {
     id: String,
     label: String,
     title: String
