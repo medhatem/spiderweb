@@ -4,11 +4,11 @@ const url = require('url');
 const axios = require('axios');
 
 class Site {
-    constructor(url_princ,enfant,title,descript) {
+    constructor(url_princ,enfant,path,title) {
       this.lien_principal = url_princ;
       this.set_enfant=enfant;
+      this.set_path=path;
       this.titre= title;
-      this.description= descript;
     }
 }
 
@@ -19,12 +19,11 @@ class Crawler {
     }
 
 
-
     // function pour analyser la page d'un lien recu  
     lancerAnalyse(lien_principal){
         let urls_enfants= new Set();
-        
-        console.log(lien_principal);
+        let path_enfants= new Set();
+
         let lien_principal_valide=null;
         try {
             lien_principal_valide = new URL(lien_principal);
@@ -47,13 +46,17 @@ class Crawler {
                 
                     $('a').each(function(index){
                         const link = $(this).attr('href');
-                        if(link && link.match("http") == "http" ){
+                        if(link && link[0].toString() == "/" ){
+                            path_enfants.add(link);
+                            urls_enfants.add(lien_principal_valide.origin.toString() + link);
+                          
+                        }else if(link && link.match("http") == "http" ){
                             try {
                                 const link1 = new URL(link);
-                                urls_enfants.add(link1.hostname);
+                                urls_enfants.add(link1.hostname.replace("www.",""));
                               } catch (error) {
                                 const link1 = new URL("https://"+link);
-                                urls_enfants.add(link1.hostname);
+                                urls_enfants.add(link1.hostname.replace("www.",""));
                               }
 
                         }else{
@@ -61,22 +64,23 @@ class Crawler {
                             var sp=link2.split(" ");
                             sp.forEach(phrase => {
                                 if(phrase && phrase.match("http") === "http"){
-                                    
-
-
                                         try {
                                             const link = new URL(phrase);
-                                            urls_enfants.add(link.hostname);
+                                            urls_enfants.add(link.hostname.replace("www.",""));
                                           } catch (error) {
                                             const link = new URL("https://"+phrase);
-                                            urls_enfants.add(link.hostname);
+                                            urls_enfants.add(link.hostname.replace("www.",""));
                                           }
                                 }
                             });
+
+
+
                         }
+                        
                     });
                    
-                    resolve(new Site(lien_principal,[...urls_enfants], $("title").text()));
+                    resolve(new Site(lien_principal,[...urls_enfants],[...path_enfants], $("title").text(),""));
                 }
                 
             }
@@ -104,14 +108,14 @@ class Crawler {
           maxUrlsCount: 25
         })
 
-        console.log(result.data);
+        // console.log(result.data);
         const sites= await Promise.all(
         result.data.map(async (url) => {
             return await crawler.lancerAnalyse(url);
         }));
         
         console.log("¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨");
-        console.log(sites);
+        // console.log(sites);
        await this.envoyer_resultat(sites);
       } catch (error) {
         console.error(error);
