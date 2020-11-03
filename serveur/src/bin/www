@@ -1,5 +1,17 @@
 #!/usr/bin/env node
 
+/*
+ * Setup environnements variables (check 12 factor app manifesto for more info)
+ *  On laisse l'initialisation du .env ici car c'est un .env par environnement, donc /tests
+ *  va avoir son propre initialisation du .env
+ */
+const dotenv = require("dotenv");
+const result_dotenv = dotenv.config("../../.env");
+if (result_dotenv.error) {
+  throw result_dotenv.error;
+}
+console.log(result_dotenv.parsed);
+
 /**
  * Module dependencies.
  */
