@@ -15,8 +15,7 @@
 
                   <div id="Noeuds" class="noeudsLiens">
                     <h6 class="title-spiderweb" *ngIf="(myFilteredNodes | filterBy: urlFilter).length > 0">{{ myFilteredNodes.length }} URLs trouvés: </h6>
-                    <h6 class="title-spiderweb" *ngIf="(myFilteredNodes | filterBy: urlFilter).length === 0">Aucun URL trouvé...</h6>
-                    <input class="form-control" type="text" [(ngModel)]="urlFilter.id" placeholder="Chercher">
+                    <input class="form-control" type="text" [(ngModel)]="urlFilter.id" placeholder="Chercher un URL">
                     <table class="table table-spiderweb">
                         <tbody>
                             <tr *ngFor="let Urls of myFilteredNodes | filterBy: urlFilter; let i = index">
@@ -29,8 +28,7 @@
                   
                   <div id="Liens" class="noeudsLiens" style="display:none">
                     <h6 class="title-spiderweb" *ngIf="(myFilteredEdges | filterBy: urlFilter).length > 0">{{ myFilteredEdges.length }} liens établis: </h6>
-                    <h6 class="title-spiderweb" *ngIf="(myFilteredEdges | filterBy: urlFilter).length === 0">Aucun lien établi...</h6>
-                    <input class="form-control" type="text" [(ngModel)]="urlFilter.id" placeholder="Chercher">
+                    <input class="form-control" type="text" [(ngModel)]="urlFilter.id" placeholder="Chercher un lien">
                     <table class="table table-spiderweb">
                         <tbody>
                             <tr *ngFor="let Urls of myFilteredEdges | filterBy: urlFilter; let i = index">

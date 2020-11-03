@@ -3,6 +3,7 @@ import { NgxSpinnerService } from "ngx-spinner";
 import { Network, DataSet, Edge, Node } from "vis-network/standalone";
 import { ApiService } from './../api.service';
 import { Urls } from '../model/urls.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-graph',
@@ -27,7 +28,7 @@ export class GraphComponent implements OnInit {
   myFilteredEdges: Urls[];
   urlFilter: any = { id: '' };
 
-  constructor(private spinner: NgxSpinnerService, private apiService: ApiService) {}
+  constructor(private spinner: NgxSpinnerService, private apiService: ApiService, private toastr: ToastrService) {}
   
   ngOnInit() {
     // Chargement de 5sec avant l'affichage du graph
@@ -35,6 +36,7 @@ export class GraphComponent implements OnInit {
     setTimeout(() => {
       this.spinner.hide();
     }, 1000);
+    
 
     // Appel de la requete getAllGraph pour récupérer les données du Graph
     this.apiService.getAllGraph().subscribe((data: Urls[]) => {
@@ -71,8 +73,40 @@ export class GraphComponent implements OnInit {
       // Ajouter les options du Graph
       this.options = {
         height: "700px",
-        physics:{enabled:true}, //false si les noeuds ne se repositionnent pas automatiquement
-        interaction:{navigationButtons: true}
+        highlightNearest: true,
+        physics: {
+          stabilization: false,
+          barnesHut:{
+            gravitationalConstant: -80000,
+            springConstant: 0.001,
+            springLength: 200
+          },
+        },
+        interaction:{
+          navigationButtons: true,
+          hideEdgesOnDrag: true,
+          hideEdgesOnZoom: true
+        },
+        nodes:{
+          shape: "dot",
+          size: 20,
+          font: {
+            size: 12,
+            face: "Tahoma",
+          },
+        },
+        edges: {
+          width: 0.15,
+          color:{ 
+            inherit: 'from',  
+          },
+          smooth: {
+            type: "continuous",
+          },
+        },
+        layout:{
+          improvedLayout: true,
+        },
       };
 
       console.log("ici");
@@ -126,7 +160,7 @@ export class GraphComponent implements OnInit {
 
   
   //mise en forme pour viz
-//retournne une liste de noeud et de edges
+  //retournne une liste de noeud et de edges
   miseEnForme(noeud_edge){
     var noeud= new Map();
     var edges= new Map();
@@ -134,11 +168,15 @@ export class GraphComponent implements OnInit {
     noeud_edge.edges.forEach( element => {
       noeud.set(element.url_parent, {id : element.url_parent, label : element.url_parent, title : element.url_parent});
       element.url_enfants.forEach(url => {
-        noeud.set(url, {id : url, label : url, title : url});
+        noeud.set(url, {id : url, label : url, title : url, group : this.randomInteger(1, 10)	});
         edges.set(element.url_parent + url, {from : element.url_parent, to: url});
        })
     });
     return {noeud : Array.from(noeud.values()),edges : Array.from(edges.values())};
+  }
+
+  randomInteger(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
   openNoeudsLiens(item) {

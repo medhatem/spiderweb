@@ -11,6 +11,7 @@ import { HttpClientModule } from "@angular/common/http";
 import { NgxSpinnerModule } from "ngx-spinner";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FilterPipeModule } from 'ngx-filter-pipe';
+import { ToastContainerModule, ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,13 @@ import { FilterPipeModule } from 'ngx-filter-pipe';
     ReactiveFormsModule,
     NgxSpinnerModule,
     FilterPipeModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ToastContainerModule,
+    ToastrModule.forRoot({
+      timeOut: 5000,
+      closeButton: true,
+      progressBar: true,
+    })
   ],
   providers: [ApiService],
   bootstrap: [AppComponent]

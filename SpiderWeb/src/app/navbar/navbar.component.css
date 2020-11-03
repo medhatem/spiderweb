@@ -26,4 +26,42 @@ a.navbar-brand, a.navbar-brand:hover, a.navbar-brand:active, a.navbar-brand:focu
   .container {
     max-width: 1500px !important;
   }
+
+  .container-spiderweb {
+    padding: 0px !important;
+  }
+
+  .btn-navbar {
+    background-color: #f4f4f4;
+    color: black;
+    height: 35px;
+    width: 35px;
+    margin-left: 5px;
+  }
+
+  .btn-navbar:hover {
+    background-color: #dae0e5;
+  }
+
+  .btn-navbar:focus {
+    background-color: #dae0e5;
+    box-shadow: none;
+  }
+
+  .btn-search {
+    background-image: url(https://www.flaticon.com/svg/static/icons/svg/786/786307.svg);
+    background-position: center;
+    background-size: 15px 15px;
+    background-repeat: no-repeat;
+  }
+
+  .btn-stop {
+    background-image: url(https://www.flaticon.com/svg/static/icons/svg/254/254443.svg);
+    background-position: center;
+    background-size: 15px 15px;
+    background-repeat: no-repeat;
+  }
+
+  
+  
   
