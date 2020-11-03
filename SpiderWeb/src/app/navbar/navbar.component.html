@@ -1,7 +1,11 @@
 <header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3">
-      <div class="container">
+      <div class="container container-spiderweb">
         <a class="navbar-brand" [routerLink]="['/']">SpiderWeb</a>
+        <div class="btnnavbar">
+          <!--<button class="btn btn-navbar btn-search" *ngIf="router.url === '/graph'"></button>-->
+          <button class="btn btn-navbar btn-stop" *ngIf="router.url === '/graph'" (click)="toast()" [routerLink]="['/']"></button>
+        </div>
       </div>
     </nav>
   </header>

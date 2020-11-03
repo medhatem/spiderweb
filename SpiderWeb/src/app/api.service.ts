@@ -7,21 +7,28 @@ import { Observable } from 'rxjs';
 })
 export class ApiService {
 
-  uri = 'http://localhost:8080';
+  uri = 'http://localhost:3000';
   constructor(private httpClient: HttpClient) { }
   response;
 
 
-
-  /* Requetes */
+  /* Requete d'initialisation des URLs pour les crawlers */
   AddUrl(urlData) {
-    console.log("AddUrl(urlData)" + urlData);
-    //this.httpClient.post<any>(this.uri + '/users/add_user', userData).subscribe(res => {
-      //this.response = res;
-    //});
+    console.log(urlData);
+    this.httpClient.post<any>(this.uri + '/init/', urlData).subscribe(res => {
+      this.response = res;
+    });
   }
 
+  /* Requete du premier affichage du graph */
+  getAllGraph() {
+    console.log('getAllGraph() Api Services');
+    return this.httpClient.get<any>(this.uri + '/graph/').pipe();
+  }
+
+  /* Requete d'affichage des enfants de niveau 3 d'un noeud */
+  getNodeChildren(nodeId) {
+    console.log('getNodeChildren(nodeId) ', nodeId);
+    return this.httpClient.get<any>(this.uri + '/graph?urlparent=' + nodeId).pipe();
+  }
 }
-
-
-
