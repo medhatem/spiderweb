@@ -22,13 +22,13 @@ class Crawler {
       try {
       const res= await axios.post('http://127.0.0.1:3000/subscribe',{ "secret": "ii" });
       const token= res.data.crawler_token;
-      console.log(token);
+      console.log("token: "+token);
       this.instance= axios.create({baseURL: 'http://127.0.0.1:3000',headers:{Authorization: token}})
       }catch (e) {
         console.error(e);
       }
     }
-
+    
     // function pour analyser la page d'un lien recu  
     lancerAnalyse(lien_principal){
         let urls_enfants= new Set();
