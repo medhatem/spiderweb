@@ -16,7 +16,7 @@ const mongodbOpenConnexion = async (db_name = "crawlers") => {
   create_client_once();
   const client = clients.mongo_client;
   await client.connect();
-  databases.crawlers = client.db(db_name);
+  databases.crawlers = client.db(process.env.CRAWLER_DB_NAME || db_name);
 };
 
 const mongoDbCloseConnexion = async () => {

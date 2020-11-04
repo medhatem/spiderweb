@@ -2,7 +2,7 @@ const crypto = require("crypto");
 const GetCrawlersSessionCollection = require("../conn-databases/mongodb").GetCrawlersSessionCollection;
 
 const MS_PER_MINUTE = 60000;
-const CRAWLER_LOGOUT_TIMEOUT = 10 * MS_PER_MINUTE; // ms
+const CRAWLER_LOGOUT_TIMEOUT = 5 * MS_PER_MINUTE; // ms
 
 const authentication = async (authentication_token) => {
   session = await GetCrawlersSessionCollection().findOne({ crawler_token: { $eq: authentication_token } });

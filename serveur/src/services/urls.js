@@ -99,12 +99,23 @@ const urlToNumber = (url) => {
   return Number(`0x${url_hashed_slice}`);
 };
 
+const verify_urls_are_distincts = async (distinct_urls, collection, prop_name) => {
+  const urls_to_not_insert_obj = await collection
+    .find({ [prop_name]: { $in: distinct_urls } }, { [prop_name]: 1, _id: 0 })
+    .toArray();
+  const urls_to_not_insert = urls_to_not_insert_obj.map((obj) => obj[prop_name]);
+  const urls_to_save = distinct_urls.filter((url) => urls_to_not_insert.indexOf(url) < 0);
+  return urls_to_save;
+};
+
 const stock_to_feast_urls = async (distinct_urls) => {
-  const urls_to_not_insert_obj = await GetUrlsFeastCollection()
+  /* const urls_to_not_insert_obj = await GetUrlsFeastCollection()
     .find({ url: { $in: distinct_urls } }, { url: 1, _id: 0 })
     .toArray();
   const urls_to_not_insert = urls_to_not_insert_obj.map((obj) => obj.url);
-  const urls_to_save = distinct_urls.filter((url) => urls_to_not_insert.indexOf(url) < 0);
+  const urls_to_save = distinct_urls.filter((url) => urls_to_not_insert.indexOf(url) < 0); */
+
+  const urls_to_save = await verify_urls_are_distincts(distinct_urls, GetUrlsFeastCollection(), "url");
 
   if (urls_to_save.length === 0) {
     return false;
@@ -131,7 +142,16 @@ const stock_to_feast_urls = async (distinct_urls) => {
 const stock = async (crawler_session, sites) => {
   const feast_set_url_enfants = new Set();
   const promise_array = [];
-  sites.forEach((site) => {
+
+  const urls_to_save = await verify_urls_are_distincts(
+    sites.map(({ lien_principal }) => lien_principal),
+    GetUrlsGraphCollection(),
+    "lien_principal"
+  );
+
+  sites_to_save = sites.filter(({ lien_principal }) => urls_to_save.indexOf(lien_principal) > -1);
+
+  sites_to_save.forEach((site) => {
     url_enfants = Array.from(new Set(site.set_enfant));
 
     const ops_insert_to_graph_promise = GetUrlsGraphCollection().insertOne({
