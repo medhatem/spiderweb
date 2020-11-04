@@ -161,6 +161,10 @@ test(
         set_enfant: ["https://youtube.com", "https://developer.mozilla.org", "https://stackoverflow.com"],
       },
       {
+        lien_principal: "facebook.com",
+        set_enfant: ["https://youtube.com", "https://developer.mozilla.org", "https://stackoverflow.com"],
+      },
+      {
         lien_principal: "https://usherbrooke.ca",
         set_enfant: ["https://en.wikipedia.org", "https://docs.mongodb.com", "https://expressjs.com"],
       },

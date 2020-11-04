@@ -1,5 +1,8 @@
 const authentication = require("../services/crawlers-manager").authentication;
 
+/**
+ * Middleware pour authentifier les crawlers au moment qu'il "poke" les routes d'urls
+ */
 const crawlers_auth_middleware = async (req, res, next) => {
   try {
     if (!req.get("authorization")) {

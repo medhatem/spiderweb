@@ -8,14 +8,16 @@ const { fetchAllUrlsGraph, fetchOneNodeUrlsGraph, init_stock } = require("../ser
 /* GET home page. */
 router.get("/", function (req, res, next) {
   try {
-    res.status(200).send({ some_exemple: "Hello World" });
+    res.status(200).send({ Hello: "World" });
   } catch (error) {
     res.status(404).send();
     console.error(error);
   }
 });
 
-/* GET all urls */
+/**
+ * GET tout le graph ou tout les parties du graph d'urls
+ */
 router.get("/graph", async function (req, res, next) {
   try {
     if (req.query.urlparent) {
@@ -31,6 +33,9 @@ router.get("/graph", async function (req, res, next) {
   }
 });
 
+/**
+ * POST pour les urls initiaux pour debuter le feast
+ */
 router.post("/init", async (req, res, next) => {
   try {
     const urls = req.body.urls;
@@ -51,6 +56,7 @@ router.post("/init", async (req, res, next) => {
  * {
  *  secret: String
  * }
+ * Cree une nouvelle session de crawler
  */
 router.post("/subscribe", async function (req, res, next) {
   try {

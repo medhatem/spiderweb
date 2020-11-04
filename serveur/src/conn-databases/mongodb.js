@@ -12,11 +12,11 @@ const create_client_once = () => {
   clients.mongo_client = new MongoClient(process.env.MONGODB_CONN_URL, options);
 };
 
-const mongodbOpenConnexion = async (db_name = "crawlers") => {
+const mongodbOpenConnexion = async (db_name) => {
   create_client_once();
   const client = clients.mongo_client;
   await client.connect();
-  databases.crawlers = client.db(process.env.CRAWLER_DB_NAME || db_name);
+  databases.crawlers = client.db(db_name || "crawlers");
 };
 
 const mongoDbCloseConnexion = async () => {
