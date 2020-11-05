@@ -8,6 +8,7 @@ const urlsRouter = require("./routes/urls");
 const crawlers_auth_mw = require("./routes/crawlers-auth-middleware");
 
 const app = express();
+app.use(cors());
 
 app.use(cors());
 app.use(logger("dev"));
