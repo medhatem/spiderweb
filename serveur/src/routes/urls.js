@@ -1,17 +1,12 @@
 const express = require("express");
 const router = express.Router();
+const { body } = require("express-validator");
+const { ErrorsValidation } = require("./errors-validation-middleware");
 
-//const fetchUrls = require("../services/test-fetch-urls").FetchTest;
 const { feast, stock } = require("../services/urls");
 
-/*
-  req.body.feast 
-  {
-    maxUrlsCount: Int
-  }
- */
 /* POST request for some url to feast */
-router.post("/feast", async function (req, res, next) {
+router.post("/feast", [body("maxUrlsCount").notEmpty().isInt(), ErrorsValidation], async function (req, res, next) {
   try {
     const urls = await feast(req.session, req.body.maxUrlsCount);
     res.status(200).send(urls);
@@ -21,29 +16,25 @@ router.post("/feast", async function (req, res, next) {
   }
 });
 
-/*  
-    req.body.sites ==================
-    [
-      {
-        url_parent: String,
-        url_enfants: [String, String, ...],
-      },
-      {...},
-      .
-      .
-      .
-    ]
- */
 /* POST one to many urls */
-router.post("/sites", async function (req, res, next) {
-  try {
-    console.log(req.body.sites);
-    const result = await stock(req.session, req.body.sites);
-    res.status(201).send({ message: "success" });
-  } catch (error) {
-    res.status(404).send();
-    console.error(error);
+router.post(
+  "/sites",
+  [
+    body("sites").notEmpty().isArray(),
+    body("sites.*.lien_principal").notEmpty().isFQDN(),
+    body("sites.*.set_enfant").notEmpty().isArray(),
+    body("sites.*.set_enfant.*").isFQDN(),
+    ErrorsValidation,
+  ],
+  async function (req, res, next) {
+    try {
+      const result = await stock(req.session, req.body.sites);
+      res.status(201).send({ message: "success" });
+    } catch (error) {
+      res.status(404).send();
+      console.error(error);
+    }
   }
-});
+);
 
 module.exports = router;
