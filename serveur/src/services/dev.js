@@ -1,7 +1,11 @@
 /**
  * Utils pour le developpement
  */
-const { GetUrlsGraphCollection, GetUrlsFeastCollection } = require("../conn-databases/mongodb");
+const {
+  GetUrlsGraphCollection,
+  GetUrlsFeastCollection,
+  GetCrawlersSessionCollection,
+} = require("../conn-databases/mongodb");
 
 const reset = async () => {
   const result_delete_graph = await GetUrlsGraphCollection().deleteMany({});
@@ -10,4 +14,10 @@ const reset = async () => {
   return { result_delete_graph, result_delete_feast };
 };
 
-module.exports = { reset };
+const reset_crawlers = async () => {
+  const result_delete_crawler = await GetCrawlersSessionCollection().deleteMany({});
+
+  return result_delete_crawler;
+};
+
+module.exports = { reset, reset_crawlers };

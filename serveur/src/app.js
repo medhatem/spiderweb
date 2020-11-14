@@ -5,6 +5,7 @@ const cors = require("cors");
 
 const indexRouter = require("./routes/index");
 const urlsRouter = require("./routes/urls");
+const devRouter = require("./routes/dev");
 const crawlers_auth_mw = require("./routes/crawlers-auth-middleware");
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use("/", indexRouter);
+app.use("/dev", devRouter);
 app.use(crawlers_auth_mw);
 app.use("/urls", urlsRouter);
 app.use(function (err, req, res, next) {
