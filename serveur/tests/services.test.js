@@ -25,6 +25,8 @@ const {
   allTokensOfActiveCrawlers,
 } = require("../src/services/crawlers-manager");
 
+const { reset } = require("../src/services/dev");
+
 // TESTS
 beforeAll(async () => {
   await MongoDbOpenConnexion("crawlers-test");
@@ -338,6 +340,82 @@ test(
     expect(graph_one_node_result).toBeTruthy();
     expect(graph_one_node_result.edges).toBeTruthy();
     expect(graph_one_node_result.edges.length).toBe(6);
+  },
+  test_timeout_ms
+);
+
+test(
+  "dev-client reset graph and feast",
+  async () => {
+    // Subscribe
+    const crawler_token = await subscribe(process.env.CRAWLER_TOKEN_SECRET);
+    expect(crawler_token).toBeTruthy();
+    // Auth
+    const crawler_session = await authentication(crawler_token);
+    expect(crawler_session).toBeTruthy();
+    expect(crawler_session.crawler_token).toBe(crawler_token);
+    // Get all active token
+    const token_array = await allTokensOfActiveCrawlers();
+    expect(token_array.length).toBe(1);
+    expect(token_array[0].crawler_token).toBe(crawler_token);
+
+    const stock_result_1 = await stock(crawler_session, [
+      {
+        lien_principal: "https://github.com",
+        set_enfant: ["https://facebook.com", "https://usherbrooke.ca"],
+      },
+      {
+        lien_principal: "https://facebook.com",
+        set_enfant: [
+          "https://youtube.com",
+          "https://developer.mozilla.org",
+          "https://stackoverflow.com",
+          "https://expressjs.com",
+        ],
+      },
+      {
+        lien_principal: "https://usherbrooke.ca",
+        set_enfant: [
+          "https://en.wikipedia.org",
+          "https://docs.mongodb.com",
+          "https://medium.com",
+          "https://github.com",
+        ],
+      },
+      {
+        lien_principal: "https://expressjs.com",
+        set_enfant: ["https://www.w3schools.com", "https://medium.com"],
+      },
+      {
+        lien_principal: "https://medium.com",
+        set_enfant: ["https://www.geeksforgeeks.org", "https://learning.postman.com"],
+      },
+      {
+        lien_principal: "https://www.w3schools.com",
+        set_enfant: ["https://en.wikipedia.org", "https://facebook.com"],
+      },
+    ]);
+    expect(stock_result_1).toBeTruthy();
+
+    const feast_result = await feast(crawler_session, 50);
+    expect(feast_result.length).toBe(13);
+
+    const graph_one_node_result = await fetchAllUrlsGraph();
+
+    expect(graph_one_node_result).toBeTruthy();
+    expect(graph_one_node_result.edges).toBeTruthy();
+    expect(graph_one_node_result.edges.length).toBe(6);
+
+    const results = await reset();
+
+    const graph_one_node_result_reset = await fetchAllUrlsGraph();
+    expect(graph_one_node_result_reset).toBeTruthy();
+    expect(graph_one_node_result_reset.edges).toBeTruthy();
+    expect(graph_one_node_result_reset.edges.length).toBe(0);
+
+    const feast_result_reset = await feast(crawler_session, 50);
+    expect(feast_result_reset.length).toBe(0);
+
   },
   test_timeout_ms
 );
