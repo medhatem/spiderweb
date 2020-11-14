@@ -147,7 +147,7 @@ class Crawler {
 
         console.log("resultat de feast:")
         console.log(result.data);
-        
+
         const sites= await Promise.all(
         result.data.map(async (url) => {
             return await crawler.lancerAnalyse(url);
@@ -160,6 +160,7 @@ class Crawler {
           if(site.set_path != null){
             for(const path of site.set_path){
               sites_paths.add(await crawler.lancerAnalyse(site.lien_principal + path));
+              
             }
           }
           for(const enfant of sites_paths){
