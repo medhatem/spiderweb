@@ -2,10 +2,10 @@
   "name": "crawler",
   "version": "1.0.0",
   "description": "crawer simple en nodejs",
-  "main": "server.js",
+  "main": "crawler.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node crawler.js"
   },
   "author": "Mohamed Hatem & Gabriel Jolicoeur",
   "license": "ISC",

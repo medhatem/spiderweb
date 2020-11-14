@@ -160,7 +160,8 @@ class Crawler {
           if(site.set_path != null){
             for(const path of site.set_path){
               sites_paths.add(await crawler.lancerAnalyse(site.lien_principal + path));
-              
+              const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
+              await sleep(1000); // sleep for 1 second
             }
           }
           for(const enfant of sites_paths){
@@ -204,13 +205,13 @@ class Crawler {
                 await this.recevoir();
                 const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
 
-                await sleep(10000); // sleep for 10 seconds
+                await sleep(1000); // sleep for 1 second
                 
             } catch (error) {
                 console.log("rien a faire")
                 const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
 
-                await sleep(10000); // sleep for 10 seconds
+                await sleep(1000); // sleep for 1 second
 
             }
         }
