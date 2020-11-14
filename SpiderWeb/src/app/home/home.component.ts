@@ -2,6 +2,7 @@ import { Component, OnInit} from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ApiService } from './../api.service';
+import { NgxSpinnerService } from "ngx-spinner";
 
 @Component({
   selector: 'app-home',
@@ -11,7 +12,7 @@ import { ApiService } from './../api.service';
 export class HomeComponent {
   postUrl: FormGroup;
 
-  constructor(private router: Router, private fb: FormBuilder, private apiService: ApiService,) {
+  constructor(private router: Router, private fb: FormBuilder, private apiService: ApiService, private spinner: NgxSpinnerService,) {
     this.postUrl = this.fb.group({
       'url1': '',
       'url2': '',
@@ -135,10 +136,18 @@ export class HomeComponent {
 
           //Requete post http
           this.apiService.AddUrl(home);
-          console.log(home)
+          console.log("AddUrl", home);
+
+          // Chargement de 5sec avant l'affichage du graph
+          this.spinner.show();
+          setTimeout(() => {
+            this.spinner.hide();
+            //Navigation
+            this.router.navigate(['/graph']);
+            console.log("navigate");
+          }, 10000);
           
-          //Navigation
-          this.router.navigate(['/graph']);
+          
         }
       })();
     }

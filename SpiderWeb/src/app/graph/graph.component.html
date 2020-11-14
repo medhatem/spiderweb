@@ -3,43 +3,19 @@
     <div class="row row-spiderweb">
         <div class="column1">
             <div class="container-urls">
-
-                <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    <label class="btn btn-toggle">
-                      <input type="radio" autocomplete="off" (click)="openNoeudsLiens('Noeuds')"> URLs
-                    </label>
-                    <label class="btn btn-toggle">
-                      <input type="radio" autocomplete="off" (click)="openNoeudsLiens('Liens')"> Liens
-                    </label>
-                  </div>
-
-                  <div id="Noeuds" class="noeudsLiens">
+                <div class="header-container">
+                    <div class="header2-container"></div>
                     <h6 class="title-spiderweb" *ngIf="(myFilteredNodes | filterBy: urlFilter).length > 0">{{ myFilteredNodes.length }} URLs trouvés: </h6>
                     <input class="form-control" type="text" [(ngModel)]="urlFilter.id" placeholder="Chercher un URL">
-                    <table class="table table-spiderweb">
-                        <tbody>
-                            <tr *ngFor="let Urls of myFilteredNodes | filterBy: urlFilter; let i = index">
-                                <button class="btn btn-list" (click)="clickListNode(Urls.id)">{{ Urls.id }}</button>
-                            </tr>
+                </div> 
+                <table class="table table-spiderweb">
+                    <tbody>
+                        <tr *ngFor="let Urls of myFilteredNodes | filterBy: urlFilter; let i = index">
+                            <button class="btn btn-list" (click)="clickListNode(Urls.id)">{{ Urls.id }}</button>
+                        </tr>
                             <td *ngIf="(myFilteredNodes | filterBy: urlFilter).length === 0">Aucun résultat...</td>
-                        </tbody>
-                    </table>
-                  </div>
-                  
-                  <div id="Liens" class="noeudsLiens" style="display:none">
-                    <h6 class="title-spiderweb" *ngIf="(myFilteredEdges | filterBy: urlFilter).length > 0">{{ myFilteredEdges.length }} liens établis: </h6>
-                    <input class="form-control" type="text" [(ngModel)]="urlFilter.id" placeholder="Chercher un lien">
-                    <table class="table table-spiderweb">
-                        <tbody>
-                            <tr *ngFor="let Urls of myFilteredEdges | filterBy: urlFilter; let i = index">
-                                <button class="btn btn-list edges" (click)="clickListEdge(Urls.id)">{{ Urls.from }} --> {{ Urls.to }}</button>
-                            </tr>
-                            <td *ngIf="(myFilteredEdges | filterBy: urlFilter).length === 0">Aucun résultat...</td>
-                        </tbody>
-                    </table>
-                  </div>
-
-                    
+                    </tbody>
+                </table>
             </div> 
         </div>
         <div class="column2">
@@ -49,18 +25,25 @@
 </div>
 
 <!--
-<tbody>
-    <tr *ngFor="let Graph of myGraph | filterBy: urlFilter; let i = index">
-        <button class="btn btn-list" (click)="clickList(Graph.id)">{{ Graph.label }}</button>
-    </tr>
-    <td *ngIf="(myGraph | filterBy: urlFilter).length === 0">Auncun résultat...</td>
-</tbody>
-    -->
-<!--
-    <tbody>
-        <tr *ngFor="let Urls of myFilteredNodes | filterBy: urlFilter; let i = index">
-            <button class="btn btn-list" (click)="clickList(Urls.id)">{{ Graph.id }}</button>
-        </tr>
-        <td *ngIf="(myFilteredNodes | filterBy: urlFilter).length === 0">Auncun résultat...</td>
-    </tbody>
-    -->
+<div id="Liens" class="noeudsLiens" style="display:none">
+                    <h6 class="title-spiderweb" *ngIf="(myFilteredEdges | filterBy: urlFilter).length > 0">{{ myFilteredEdges.length }} liens établis: </h6>
+                    <input class="form-control" type="text" [(ngModel)]="urlFilter.id" placeholder="Chercher un lien">
+                    <table class="table table-spiderweb">
+                        <tbody>
+                            <tr *ngFor="let Urls of myFilteredEdges | filterBy: urlFilter; let i = index">
+                                 <button class="btn btn-list edges" (click)="clickListEdge(Urls.id)">{{ Urls.from }} -> {{ Urls.to }}</button>
+                                </tr>
+                                <td *ngIf="(myFilteredEdges | filterBy: urlFilter).length === 0">Aucun résultat...</td>
+                            </tbody>
+                        </table>
+                      </div>
+
+                      <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-toggle">
+                            <input type="radio" autocomplete="off" (click)="openNoeudsLiens('Noeuds')"> URLs
+                         </label>
+                        <label class="btn btn-toggle">
+                            <input type="radio" autocomplete="off" (click)="openNoeudsLiens('Liens')"> Liens
+                        </label>
+                    </div>
+                    -->

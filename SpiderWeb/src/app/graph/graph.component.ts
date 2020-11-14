@@ -18,6 +18,8 @@ export class GraphComponent implements OnInit {
   public options;
   public nodes;
   public edges;
+  public nodesChildren;
+  public edgesChildren;
   public nodesArray;
   public edgesArray;
   public container;
@@ -31,12 +33,12 @@ export class GraphComponent implements OnInit {
   constructor(private spinner: NgxSpinnerService, private apiService: ApiService, private toastr: ToastrService) {}
   
   ngOnInit() {
+
     // Chargement de 5sec avant l'affichage du graph
     this.spinner.show();
     setTimeout(() => {
       this.spinner.hide();
-    }, 1000);
-    
+    }, 1000); //3000 pour PROD
 
     // Appel de la requete getAllGraph pour récupérer les données du Graph
     this.apiService.getAllGraph().subscribe((data: Urls[]) => {
@@ -73,7 +75,6 @@ export class GraphComponent implements OnInit {
       // Ajouter les options du Graph
       this.options = {
         height: "700px",
-        highlightNearest: true,
         physics: {
           stabilization: false,
           barnesHut:{
@@ -91,7 +92,7 @@ export class GraphComponent implements OnInit {
           shape: "dot",
           size: 20,
           font: {
-            size: 12,
+            size: 20,
             face: "Tahoma",
           },
         },
@@ -105,12 +106,12 @@ export class GraphComponent implements OnInit {
           },
         },
         layout:{
-          improvedLayout: true,
+          improvedLayout: false,
         },
       };
 
       console.log("ici");
-
+      
       // Crée le Graph
       this.network = new Network(this.container, this.datas, this.options);
       console.log("this.network ", this.network);
@@ -125,40 +126,100 @@ export class GraphComponent implements OnInit {
        this.getId(this.nodeId);
      });
 
+     
+     
+
     });
-    
- /*   
-    // Creer un array de noeuds
-    this.nodes = new DataSet<Node, "id">([
-      { id: 1, label: "uSherbrooke", title: 'https://www.usherbrooke.ca/' }, //group:'myGroup'
-      { id: 2, label: "Facebook", title: 'https://www.facebook.ca/' },
-      { id: 3, label: "Github", title: 'https://www.github.ca/' },
-      { id: 4, label: "Gitlab", title: 'https://www.gitlab.ca/' },
-      { id: 5, label: "Amazon", title: 'https://www.amazon.ca/' }
-    ]);
-*/
     
   }
   
   // Appel de la requete GetAllGraph afin d'afficher un premier graph
   getId(id){
-    this.apiService.getNodeChildren(id).subscribe((data) => {
-    console.log("getNodeChildren(id) ", data);
+    this.apiService.getNodeChildren(id).subscribe((data: Urls[]) => {
+      this.myUrls = data;
+      console.log('getNodeChildren ', this.myUrls);
+
+      const noeud_edge = this.miseEnForme(this.myUrls);
+      console.log('getNodeChildren this.miseEnForme(this.myUrls)', this.miseEnForme(this.myUrls));
+
+      this.nodesChildren= noeud_edge.noeud;
+      //this.myFilteredNodes = this.nodes;
+      console.log('getNodeChildren this.nodes ', this.nodesChildren);
+
+      this.edgesChildren= noeud_edge.edges;
+      //this.myFilteredEdges = this.edges;
+      console.log('getNodeChildren this.edges ', this.edgesChildren);
+      console.log("getNodeChildren getNodeChildren(id) ", data);
+
+      this.addNode(); //this.nodesChildren, this.edgesChildren
     });
+    
+  }
+
+  addNode() { //nodes, edges
+
+    var nodesArr = [
+      { id: 1, label: "Node 1" },
+      { id: 2, label: "Node 2" },
+      { id: 3, label: "Node 3" },
+      { id: 4, label: "Node 4" },
+      { id: 5, label: "Node 5" },
+    ];
+
+    var edgesArr = [
+      { from: "https://www.usherbrooke.ca/", to: 3 },
+      { from: "https://www.usherbrooke.ca/", to: 2 },
+      { from: "https://www.usherbrooke.ca/", to: 4 },
+      { from: "https://www.usherbrooke.ca/", to: 5 },
+    ];
+
+    nodesArr.forEach( element1 => {
+      this.nodesArray.add({ id: element1.id, label: element1.label });
+      edgesArr.forEach( element2 => {
+        this.edgesArray.add({ from: element2.from, to: element2.to });
+      } );
+    }) ;
+    
+/*
+    var i = 0;
+    
+    nodes.forEach( element1 => {
+      for (const element2 of this.nodes) {
+        // Vérifie si la valeur existe dans le tableau
+        if(element2.id == element1.id){
+          console.log("La valeur existe!", element2.id , element1.id);
+          i++;
+          break;
+        } 
+      };
+
+      if(i == 0) {
+        console.log("La valeur n'existe pas!");
+        this.nodesArray.add({ id: element1.id, label: element1.label });
+        edges.forEach( element => {
+        this.edgesArray.add({ from: element.from, to: element.to });
+        });
+      }
+      
+    });*/
+    
   }
 
   // sélectionne sur le Graph le noeud sélectionné dans la liste d'urls
   clickListNode(idUrl){
     this.network.selectNodes([idUrl]);
+    this.focusOnNode(idUrl);
     console.log("clickList(id) " + idUrl);
   }
 
+  /*
+  // sélectionne sur le Graph le lien sélectionné dans la liste de liens
   clickListEdge(idUrl){
     this.network.selectEdges([idUrl]);
     console.log("clickList(id) " + idUrl);
   }
+  */
 
-  
   //mise en forme pour viz
   //retournne une liste de noeud et de edges
   miseEnForme(noeud_edge){
@@ -168,7 +229,7 @@ export class GraphComponent implements OnInit {
     noeud_edge.edges.forEach( element => {
       noeud.set(element.url_parent, {id : element.url_parent, label : element.url_parent, title : element.url_parent});
       element.url_enfants.forEach(url => {
-        noeud.set(url, {id : url, label : url, title : url, group : this.randomInteger(1, 10)	});
+        noeud.set(url, {id : url, label : url, title : url, group : this.randomInteger(1, 10)});
         edges.set(element.url_parent + url, {from : element.url_parent, to: url});
        })
     });
@@ -179,6 +240,20 @@ export class GraphComponent implements OnInit {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
+  focusOnNode(id) {
+    var nodeId = id;
+    var options = {
+      scale: 1.0,
+      offset: { x: 0, y: 0 },
+      animation: {
+        duration: 1000,
+        easingFunction: "easeInOutQuad",
+      },
+    };
+    this.network.focus(nodeId, options);
+  }
+
+  /*
   openNoeudsLiens(item) {
     var i;
     var x = document.getElementsByClassName("noeudsLiens");
@@ -186,6 +261,7 @@ export class GraphComponent implements OnInit {
       x[i].style.display = "none"; 
     }
     document.getElementById(item).style.display = "block";
-  }
+  }*/
+
 
 }
