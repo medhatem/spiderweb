@@ -49,19 +49,21 @@ export class GraphComponent implements OnInit {
       console.log('this.miseEnForme(this.myUrls)', this.miseEnForme(this.myUrls));
 
       this.nodes= noeud_edge.noeud;
-      this.myFilteredNodes = this.nodes;
-      console.log('this.nodes ', this.nodes);
+      const nodes_arr: any[] = Array.from(this.nodes.values());
+      this.myFilteredNodes = nodes_arr
+      console.log('this.nodes ', nodes_arr);
 
       this.edges= noeud_edge.edges;
-      this.myFilteredEdges = this.edges;
-      console.log('this.edges ', this.edges);
+      const edges_arr: any[] = Array.from(this.edges.values());
+      this.myFilteredEdges = edges_arr
+      console.log('this.edges ',  edges_arr);
 
       // Creer un array de noeuds
-      this.nodesArray = new DataSet<Node, "id">(this.nodes);
+      this.nodesArray = new DataSet<Node, "id">(nodes_arr);
       console.log("this.nodesArray ", this.nodesArray);
 
       // Creer un array de liens
-      this.edgesArray = new DataSet<Edge, "id">(this.edges);
+      this.edgesArray = new DataSet<Edge, "id">(edges_arr);
       console.log("this.edgesArray ", this.edgesArray);
     
       // create a network
@@ -142,23 +144,23 @@ export class GraphComponent implements OnInit {
       const noeud_edge = this.miseEnForme(this.myUrls);
       console.log('getNodeChildren this.miseEnForme(this.myUrls)', this.miseEnForme(this.myUrls));
 
-      this.nodesChildren= noeud_edge.noeud;
+      this.nodesChildren= Array.from(noeud_edge.noeud.values());
       //this.myFilteredNodes = this.nodes;
       console.log('getNodeChildren this.nodes ', this.nodesChildren);
 
-      this.edgesChildren= noeud_edge.edges;
+      this.edgesChildren= Array.from(noeud_edge.edges.values());
       //this.myFilteredEdges = this.edges;
       console.log('getNodeChildren this.edges ', this.edgesChildren);
       console.log("getNodeChildren getNodeChildren(id) ", data);
 
-      this.addNode(); //this.nodesChildren, this.edgesChildren
+      this.addNode(this.nodesChildren, this.edgesChildren); //
     });
     
   }
 
-  addNode() { //nodes, edges
+  addNode(nodes, edges) { //nodes, edges
 
-    var nodesArr = [
+    /* var nodesArr = [
       { id: 1, label: "Node 1" },
       { id: 2, label: "Node 2" },
       { id: 3, label: "Node 3" },
@@ -178,30 +180,44 @@ export class GraphComponent implements OnInit {
       edgesArr.forEach( element2 => {
         this.edgesArray.add({ from: element2.from, to: element2.to });
       } );
-    }) ;
+    }) ; */
     
-/*
-    var i = 0;
+
+    // var i = 0;
     
-    nodes.forEach( element1 => {
-      for (const element2 of this.nodes) {
+    nodes.forEach( new_node => {
+      /* for (const element2 of this.nodes) {
         // Vérifie si la valeur existe dans le tableau
         if(element2.id == element1.id){
           console.log("La valeur existe!", element2.id , element1.id);
           i++;
           break;
         } 
-      };
+      }; */
 
-      if(i == 0) {
+      if(!this.nodes.has(new_node.id)){
+        console.log("La valeur n'existe pas!");
+        this.nodesArray.add(new_node);
+        this.nodes.set(new_node.id, new_node);
+      }
+
+      /* if(i == 0) {
         console.log("La valeur n'existe pas!");
         this.nodesArray.add({ id: element1.id, label: element1.label });
         edges.forEach( element => {
         this.edgesArray.add({ from: element.from, to: element.to });
         });
-      }
+      } */
       
-    });*/
+    });
+
+    edges.forEach(new_edge => {
+      const edge_id = new_edge.from + new_edge.to;
+      if(!this.edges.has(edge_id)){
+        this.edgesArray.add(new_edge);
+        this.edges.set(edge_id, new_edge);
+      }
+    });
     
   }
 
@@ -233,7 +249,7 @@ export class GraphComponent implements OnInit {
         edges.set(element.url_parent + url, {from : element.url_parent, to: url});
        })
     });
-    return {noeud : Array.from(noeud.values()),edges : Array.from(edges.values())};
+    return { noeud, edges };
   }
 
   randomInteger(min, max) {
