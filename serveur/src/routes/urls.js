@@ -23,7 +23,7 @@ router.post(
     body("sites").notEmpty().isArray(),
     body("sites.*.lien_principal").notEmpty().isFQDN(),
     body("sites.*.set_enfant").notEmpty().isArray(),
-    body("sites.*.set_enfant.*").isFQDN(),
+    //body("sites.*.set_enfant.*").isFQDN(),
     ErrorsValidation,
   ],
   async function (req, res, next) {
