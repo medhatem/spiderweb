@@ -89,6 +89,19 @@
     background-color: #dae0e5;
   }
 
+  .btn-list-etendre:active {
+    background-color: #dae0e5a3;
+    border-color: #dae0e5a3;
+  }
+  
+  .btn-list-etendre:focus {
+    box-shadow: none;
+  }
+  
+  .btn-list-etendre:hover {
+    background-color: #dae0e5;
+  }
+
   .column1 {
     width: 22%;
     float: left;

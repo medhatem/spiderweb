@@ -25,6 +25,7 @@ export class GraphComponent implements OnInit {
   public container;
   public datas;
   public network;
+  public i;
   myUrls: Urls[];
   myFilteredNodes: Urls[];
   myFilteredEdges: Urls[];
@@ -38,7 +39,7 @@ export class GraphComponent implements OnInit {
     this.spinner.show();
     setTimeout(() => {
       this.spinner.hide();
-    }, 1000); //3000 pour PROD
+    }, 1000); //2000 pour PROD
 
     // Appel de la requete getAllGraph pour récupérer les données du Graph
     this.apiService.getAllGraph().subscribe((data: Urls[]) => {
@@ -128,9 +129,6 @@ export class GraphComponent implements OnInit {
        this.getId(this.nodeId);
      });
 
-     
-     
-
     });
     
   }
@@ -151,64 +149,24 @@ export class GraphComponent implements OnInit {
       this.edgesChildren= Array.from(noeud_edge.edges.values());
       //this.myFilteredEdges = this.edges;
       console.log('getNodeChildren this.edges ', this.edgesChildren);
-      console.log("getNodeChildren getNodeChildren(id) ", data);
 
-      this.addNode(this.nodesChildren, this.edgesChildren); //
+      this.addNode(this.nodesChildren, this.edgesChildren);
+      console.log("addNode ", this.nodesChildren, this.edgesChildren);
     });
     
   }
 
-  addNode(nodes, edges) { //nodes, edges
+  addNode(nodes, edges) { 
 
-    /* var nodesArr = [
-      { id: 1, label: "Node 1" },
-      { id: 2, label: "Node 2" },
-      { id: 3, label: "Node 3" },
-      { id: 4, label: "Node 4" },
-      { id: 5, label: "Node 5" },
-    ];
+    this.i = 0;
 
-    var edgesArr = [
-      { from: "https://www.usherbrooke.ca/", to: 3 },
-      { from: "https://www.usherbrooke.ca/", to: 2 },
-      { from: "https://www.usherbrooke.ca/", to: 4 },
-      { from: "https://www.usherbrooke.ca/", to: 5 },
-    ];
-
-    nodesArr.forEach( element1 => {
-      this.nodesArray.add({ id: element1.id, label: element1.label });
-      edgesArr.forEach( element2 => {
-        this.edgesArray.add({ from: element2.from, to: element2.to });
-      } );
-    }) ; */
-    
-
-    // var i = 0;
-    
     nodes.forEach( new_node => {
-      /* for (const element2 of this.nodes) {
-        // Vérifie si la valeur existe dans le tableau
-        if(element2.id == element1.id){
-          console.log("La valeur existe!", element2.id , element1.id);
-          i++;
-          break;
-        } 
-      }; */
-
       if(!this.nodes.has(new_node.id)){
         console.log("La valeur n'existe pas!");
         this.nodesArray.add(new_node);
         this.nodes.set(new_node.id, new_node);
+        this.i++;
       }
-
-      /* if(i == 0) {
-        console.log("La valeur n'existe pas!");
-        this.nodesArray.add({ id: element1.id, label: element1.label });
-        edges.forEach( element => {
-        this.edgesArray.add({ from: element.from, to: element.to });
-        });
-      } */
-      
     });
 
     edges.forEach(new_edge => {
@@ -216,10 +174,32 @@ export class GraphComponent implements OnInit {
       if(!this.edges.has(edge_id)){
         this.edgesArray.add(new_edge);
         this.edges.set(edge_id, new_edge);
+        this.i++;
       }
     });
-    
+
+    this.Message();
   }
+  
+
+  Message = async () => {
+
+      //await this.addNode(this.nodesChildren, this.edgesChildren);
+    
+      if(this.i > 0){
+  
+        this.toastr.success(this.i + " noeuds/liens ont été trouvés", 'Succès');
+        console.log("i sucess:", this.i);
+      }
+      if(this.i == 0){
+        
+        this.toastr.warning("Aucun nouveau noeud/lien n'a été trouvé. Réessayez plus tard ", '' + this.nodeId + '');
+        console.log("i warning:", this.i);
+      }
+      console.log("i :", this.i);
+  }
+
+
 
   // sélectionne sur le Graph le noeud sélectionné dans la liste d'urls
   clickListNode(idUrl){

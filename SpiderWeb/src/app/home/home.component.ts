@@ -145,8 +145,7 @@ export class HomeComponent {
             //Navigation
             this.router.navigate(['/graph']);
             console.log("navigate");
-          }, 10000);
-          
+          }, 15000);
           
         }
       })();

@@ -11,7 +11,9 @@
                 <table class="table table-spiderweb">
                     <tbody>
                         <tr *ngFor="let Urls of myFilteredNodes | filterBy: urlFilter; let i = index">
-                            <button class="btn btn-list" (click)="clickListNode(Urls.id)">{{ Urls.id }}</button>
+                            
+                            <button class="btn btn-list" (click)="clickListNode(Urls.id)">{{ Urls.id }}</button> 
+
                         </tr>
                             <td *ngIf="(myFilteredNodes | filterBy: urlFilter).length === 0">Aucun résultat...</td>
                     </tbody>
