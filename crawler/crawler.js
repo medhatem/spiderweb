@@ -107,10 +107,13 @@ class Crawler {
   }
 
   async envoyer_resultat(sites) {
-    const result = await this.instance.post("/urls/sites", {
-      sites,
-    });
-    return result;
+    if(sites){
+      const result = await this.instance.post("/urls/sites", {
+        sites,
+      });
+      return result;
+    }
+
   }
 
   union_set(setA, setB) {
@@ -129,41 +132,45 @@ class Crawler {
 
       console.log("resultat de feast:");
       console.log(result.data);
-
-      const sites = await Promise.all(
-        result.data.map(async (url) => {
-          return await crawler.lancerAnalyse(url);
-        })
-      );
-
-      for (const site of sites) {
-        const sites_paths = new Set(); // {Site, Site, Site}
-        if (site.set_path != null) {
-          for (const path of site.set_path) {
-            sites_paths.add(await crawler.lancerAnalyse(site.lien_principal + path));
-            //const sleep = (waitTimeInMs) => new Promise((resolve) => setTimeout(resolve, waitTimeInMs));
-            //await sleep(1000); // sleep for 1 second
+      if(result.data && result.data.length > 0){
+        const sites = await Promise.all(
+          result.data.map(async (url) => {
+            return await crawler.lancerAnalyse(url);
+          })
+        );
+  
+        for (const site of sites) {
+          const sites_paths = new Set(); // {Site, Site, Site}
+          if (site.set_path != null) {
+            for (const path of site.set_path) {
+              sites_paths.add(await crawler.lancerAnalyse(site.lien_principal + path));
+              //const sleep = (waitTimeInMs) => new Promise((resolve) => setTimeout(resolve, waitTimeInMs));
+              //await sleep(1000); // sleep for 1 second
+            }
+          }
+          for (const enfant of sites_paths) {
+            site.set_enfant = this.union_set(enfant.set_enfant, site.set_enfant); // {Site.set_enfant, Site, Site}, {url, url, url}
+          }
+  
+          for (const path of sites_paths) {
+            site.set_path = this.union_set(path.set_path, site.set_path); // {Site.set_enfant, Site, Site}, {url, url, url}
           }
         }
-        for (const enfant of sites_paths) {
-          site.set_enfant = this.union_set(enfant.set_enfant, site.set_enfant); // {Site.set_enfant, Site, Site}, {url, url, url}
-        }
-
-        for (const path of sites_paths) {
-          site.set_path = this.union_set(path.set_path, site.set_path); // {Site.set_enfant, Site, Site}, {url, url, url}
-        }
+  
+        console.log("¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨");
+        console.log("site apres:");
+        console.log(sites);
+  
+        sites.forEach((site) => {
+          site.set_enfant = [...site.set_enfant];
+          site.set_path = [...site.set_path];
+        });
+  
+        await this.envoyer_resultat(sites);
+      }else{
+        console.log("lisste recu vide")
       }
 
-      console.log("¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨");
-      console.log("site apres:");
-      console.log(sites);
-
-      sites.forEach((site) => {
-        site.set_enfant = [...site.set_enfant];
-        site.set_path = [...site.set_path];
-      });
-
-      await this.envoyer_resultat(sites);
     } catch (error) {
       console.error(error);
     }
