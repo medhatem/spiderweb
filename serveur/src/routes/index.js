@@ -19,7 +19,7 @@ router.get("/", function (req, res, next) {
 /**
  * GET tout le graph ou tout les parties du graph d'urls
  */
-router.get("/graph", [query("urlparent").isFQDN(), ErrorsValidation], async function (req, res, next) {
+router.get("/graph", [query("urlparent").optional().isFQDN(), ErrorsValidation], async function (req, res, next) {
   try {
     if (req.query.urlparent) {
       const urls = await fetchOneNodeUrlsGraph(req.query.urlparent);
