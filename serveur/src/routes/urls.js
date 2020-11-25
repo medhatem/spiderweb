@@ -21,9 +21,9 @@ router.post(
   "/sites",
   [
     body("sites").notEmpty().isArray(),
-    body("sites.*.lien_principal").notEmpty().isFQDN(),
+    body("sites.*.lien_principal").notEmpty().isURL(),
     body("sites.*.set_enfant").notEmpty().isArray(),
-    body("sites.*.set_enfant.*").isFQDN(),
+    body("sites.*.set_enfant.*").isURL(),
     ErrorsValidation,
   ],
   async function (req, res, next) {
