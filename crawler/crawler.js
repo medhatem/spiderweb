@@ -70,9 +70,9 @@ class Crawler {
             const link = $(this).attr("href");
 
             if ((link && link[0].toString() == "/") || (link && link.match(lien_principal) == lien_principal)) {
-              path_enfants.add(
+              /*path_enfants.add(
                 link.replace("www.", "").replace("http://", "").replace("https://", "").replace(lien_principal, "")
-              );
+              );*/
             } else if (link && link.match("http") == "http") {
               try {
                 const link1 = new URL(link);
@@ -81,7 +81,7 @@ class Crawler {
                 const link1 = new URL("https://" + link);
                 urls_enfants.add(link1.hostname.replace("www.", "").replace("http://", "").replace("https://", ""));
               }
-            } else {
+            } /*else {
               const link2 = $(this).text();
 
               var sp = link2.split(" ");
@@ -97,7 +97,7 @@ class Crawler {
                   }
                 }
               });
-            }
+            }*/
           });
 
           resolve(new Site(lien_principal, urls_enfants, path_enfants, $("title").text()));
@@ -144,8 +144,8 @@ class Crawler {
           if (site.set_path != null) {
             for (const path of site.set_path) {
               sites_paths.add(await crawler.lancerAnalyse(site.lien_principal + path));
-              //const sleep = (waitTimeInMs) => new Promise((resolve) => setTimeout(resolve, waitTimeInMs));
-              //await sleep(1000); // sleep for 1 second
+              const sleep = (waitTimeInMs) => new Promise((resolve) => setTimeout(resolve, waitTimeInMs));
+              await sleep(1000); // sleep for 1 second
             }
           }
           for (const enfant of sites_paths) {
@@ -183,14 +183,14 @@ class Crawler {
       while (true) {
         try {
           await this.recevoir();
-          //const sleep = (waitTimeInMs) => new Promise((resolve) => setTimeout(resolve, waitTimeInMs));
+          const sleep = (waitTimeInMs) => new Promise((resolve) => setTimeout(resolve, waitTimeInMs));
 
-          //await sleep(1000); // sleep for 1 second
+          await sleep(1000); // sleep for 1 second
         } catch (error) {
           console.log("rien a faire");
-          //const sleep = (waitTimeInMs) => new Promise((resolve) => setTimeout(resolve, waitTimeInMs));
+          const sleep = (waitTimeInMs) => new Promise((resolve) => setTimeout(resolve, waitTimeInMs));
 
-          // await sleep(1000); // sleep for 1 second
+          await sleep(1000); // sleep for 1 second
         }
       }
     } catch (e) {

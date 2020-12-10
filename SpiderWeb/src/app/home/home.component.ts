@@ -41,6 +41,7 @@ export class HomeComponent {
       //Sinon afficher erreur
       document.getElementById("erreurVide").style.display = "block";
     }
+    /*
     else {
 
       //Fonction urlExists permettant de valider qu'un URL existe
@@ -127,9 +128,9 @@ export class HomeComponent {
 
         // Do something after
         console.log('after delay')
-
+*/
         //Si pas d'erreur, naviguer et lance la requête
-        if (count == 0) {
+        //if (count == 0) {
 
           //Afficher réussite
           console.log("Tout va bien");
@@ -148,7 +149,7 @@ export class HomeComponent {
           }, 15000);
           
         }
-      })();
-    }
-  }
+      //})();
+    //}
+ // }
 }
