@@ -19,11 +19,26 @@
     width: 100%;
     border: 1px solid #dae0e5;
     padding: 15px;
+    padding-top: 0px !important;
     overflow-x: hidden;
     overflow-y: scroll;
   }
+
+  .header-container {
+    position: sticky;
+    top: 0;
+    background-color: #f4f4f4;
+  }
+
+  .header2-container {
+    height: 5px;
+    position: sticky;
+    top: 0;
+    background-color: #f4f4f4;
+  }
   
   .title-spiderweb {
+    margin-top: 1rem;
     margin-bottom: 1rem;
     font-size: large;
   }
@@ -46,6 +61,7 @@
 
   .btn-list {
     width: 100%;
+    max-width: 89%;
     color: black;
     border-top: 1px solid #dae0e5;
     border-radius: 0px;
@@ -57,7 +73,7 @@
 
   .edges {
     font-size: small;
-    max-width: 68%;
+    max-width: 59%;
   }
   
   .btn-list:active {
@@ -70,6 +86,19 @@
   }
   
   .btn-list:hover {
+    background-color: #dae0e5;
+  }
+
+  .btn-list-etendre:active {
+    background-color: #dae0e5a3;
+    border-color: #dae0e5a3;
+  }
+  
+  .btn-list-etendre:focus {
+    box-shadow: none;
+  }
+  
+  .btn-list-etendre:hover {
     background-color: #dae0e5;
   }
 

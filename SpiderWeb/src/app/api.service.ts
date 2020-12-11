@@ -31,4 +31,21 @@ export class ApiService {
     console.log('getNodeChildren(nodeId) ', nodeId);
     return this.httpClient.get<any>(this.uri + '/graph?urlparent=' + nodeId).pipe();
   }
+
+  /* Requete d'initialisation des URLs pour les crawlers */
+  reset(vide) {
+    console.log("reset");
+    this.httpClient.post<any>(this.uri + '/dev/reset', vide).subscribe(res => {
+      this.response = res;
+    });
+  }
+
+  /* Requete d'initialisation des URLs pour les crawlers */
+  reset_Crawlers(vide) {
+    console.log("reset crawlers");
+    this.httpClient.post<any>(this.uri + '/dev/reset-crawlers-session', vide).subscribe(res => {
+      this.response = res;
+    });
+  }
+
 }

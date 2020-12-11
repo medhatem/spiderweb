@@ -4,7 +4,7 @@
         <a class="navbar-brand" [routerLink]="['/']">SpiderWeb</a>
         <div class="btnnavbar">
           <!--<button class="btn btn-navbar btn-search" *ngIf="router.url === '/graph'"></button>-->
-          <button class="btn btn-navbar btn-stop" *ngIf="router.url === '/graph'" (click)="toast()" [routerLink]="['/']"></button>
+          <button class="btn btn-navbar" *ngIf="router.url === '/graph'" (click)="resetAll()" [routerLink]="['/']">Arrêter</button>
         </div>
       </div>
     </nav>

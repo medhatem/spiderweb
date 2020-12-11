@@ -34,8 +34,6 @@ a.navbar-brand, a.navbar-brand:hover, a.navbar-brand:active, a.navbar-brand:focu
   .btn-navbar {
     background-color: #f4f4f4;
     color: black;
-    height: 35px;
-    width: 35px;
     margin-left: 5px;
   }
 

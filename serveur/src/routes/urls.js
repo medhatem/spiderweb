@@ -6,7 +6,8 @@ const { ErrorsValidation } = require("./errors-validation-middleware");
 const { feast, stock } = require("../services/urls");
 
 /* POST request for some url to feast */
-router.post("/feast", [body("maxUrlsCount").notEmpty().isInt(), ErrorsValidation], async function (req, res, next) {
+router.post("/feast", async function (req, res, next) {
+  //[body("maxUrlsCount").notEmpty().isInt(), ErrorsValidation]
   try {
     const urls = await feast(req.session, req.body.maxUrlsCount);
     res.status(200).send(urls);
@@ -38,3 +39,12 @@ router.post(
 );
 
 module.exports = router;
+
+/*
+[
+    body("sites").notEmpty().isArray(),
+    body("sites.*.lien_principal").notEmpty().isFQDN(),
+    body("sites.*.set_enfant").notEmpty().isArray(),
+    body("sites.*.set_enfant.*").isFQDN(),
+    ErrorsValidation,
+  ],*/
