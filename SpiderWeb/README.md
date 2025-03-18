@@ -1,27 +1,73 @@
-# SpiderWeb
+# 🕸️ SpiderWeb - Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.1.2.
+![Angular](https://img.shields.io/badge/Angular-EE1B24?style=flat&logo=angular&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white) ![SCSS](https://img.shields.io/badge/SCSS-CC6699?style=flat&logo=sass&logoColor=white)
 
-## Development server
+This is the frontend of the **SpiderWeb** project, built with Angular CLI version **10.1.2**.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## 🚀 Features
+- **Angular 10**: Modern frontend framework for scalable applications.
+- **Component-based architecture**: Modular and reusable UI components.
+- **SCSS styling**: Better styling and maintainability.
+- **Unit & E2E Testing**: Using Karma & Protractor.
 
-## Code scaffolding
+## 🛠️ Development Setup
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### 📌 Prerequisites
+- [Node.js](https://nodejs.org/) (v12 or later)
+- [Angular CLI](https://angular.io/cli)
 
-## Build
+### 🔥 Running the Development Server
+Run the following command to start the development server:
+```bash
+ng serve
+```
+Then open your browser and navigate to: 
+➡️ **`http://localhost:4200/`**. 
+The app will automatically reload on file changes.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+## 🏗️ Code Scaffolding
+To generate a new component:
+```bash
+ng generate component component-name
+```
+You can also generate other Angular elements like directives, pipes, services, classes, guards, interfaces, enums, and modules:
+```bash
+ng generate directive|pipe|service|class|guard|interface|enum|module
+```
 
-## Running unit tests
+## 📦 Build
+To build the project:
+```bash
+ng build
+```
+The build artifacts will be stored in the `dist/` directory. For a **production build**, use:
+```bash
+ng build --prod
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## 🧪 Running Tests
 
-## Running end-to-end tests
+### ✅ Unit Tests
+Run the unit tests with:
+```bash
+ng test
+```
+This will execute the tests using **Karma**.
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+### 🛠️ End-to-End Tests
+Run the E2E tests with:
+```bash
+ng e2e
+```
+This will execute end-to-end tests using **Protractor**.
 
-## Further help
+## 📖 Further Help
+For additional Angular CLI commands, run:
+```bash
+ng help
+```
+Or check out the [Angular CLI Documentation](https://angular.io/cli).
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+---
+🚀 **Happy Coding!** 🎯
+
